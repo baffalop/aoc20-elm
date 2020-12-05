@@ -71,42 +71,25 @@ fieldValidators =
 
 intBetween : Int -> Int -> Parser ()
 intBetween lo hi =
-    P.int |> P.andThen (validateBounds lo hi)
+    P.int
+        |> P.andThen
+            (\i ->
+                if i < lo || i > hi then
+                    P.problem "out of bounds"
 
-
-validateBounds : Int -> Int -> Int -> Parser ()
-validateBounds lo hi input =
-    if input < lo || input > hi then
-        P.problem "out of bounds"
-
-    else
-        P.succeed ()
-
-
-type Height
-    = Centimeters Int
-    | Inches Int
+                else
+                    P.succeed ()
+            )
 
 
 height : Parser ()
 height =
-    P.succeed (|>)
-        |= P.int
-        |= P.oneOf
-            [ P.succeed Centimeters
-                |. P.keyword "cm"
-            , P.succeed Inches
-                |. P.keyword "in"
-            ]
-        |> P.andThen
-            (\h ->
-                case h of
-                    Centimeters i ->
-                        validateBounds 150 193 i
-
-                    Inches i ->
-                        validateBounds 59 76 i
-            )
+    P.oneOf
+        [ P.backtrackable (intBetween 150 193)
+            |. P.keyword "cm"
+        , intBetween 59 76
+            |. P.keyword "in"
+        ]
 
 
 hairColor : Parser ()
