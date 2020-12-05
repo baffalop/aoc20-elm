@@ -1,4 +1,13 @@
-module Passports exposing (parsePassports, puzzleInput)
+module Passports exposing
+    ( debugValidatedPassport
+    , exampleInvalid
+    , exampleValid
+    , hasRequiredFields
+    , hasValidFields
+    , parsePassports
+    , puzzleInput
+    , validatePassportsWith
+    )
 
 import Basics.Extra exposing (flip)
 import Dict exposing (Dict)
@@ -9,25 +18,143 @@ type alias Passport =
     Dict String String
 
 
+validatePassportsWith : (Passport -> Bool) -> String -> Result (List P.DeadEnd) (List Passport)
+validatePassportsWith validator =
+    parsePassports
+        >> Result.map (List.filter validator)
+
+
+debugValidatedPassport : Passport -> Dict String (Result (List P.DeadEnd) ())
+debugValidatedPassport passport =
+    List.map
+        (\( field, validator ) ->
+            Dict.get field passport
+                |> Result.fromMaybe []
+                |> Result.andThen (P.run validator)
+                |> Tuple.pair field
+        )
+        fieldValidators
+        |> Dict.fromList
+
+
+hasRequiredFields : Passport -> Bool
+hasRequiredFields passport =
+    List.all (Tuple.first >> flip Dict.member passport) fieldValidators
+
+
+hasValidFields : Passport -> Bool
+hasValidFields passport =
+    List.all
+        (\( field, validator ) ->
+            Dict.get field passport
+                |> Maybe.andThen (P.run validator >> Result.toMaybe)
+                |> (not << (==) Nothing)
+        )
+        fieldValidators
+
+
+
+-- FIELD PARSERS
+
+
+fieldValidators : List ( String, Parser () )
+fieldValidators =
+    [ ( "byr", intBetween 1920 2002 )
+    , ( "iyr", intBetween 2010 2020 )
+    , ( "eyr", intBetween 2020 2030 )
+    , ( "hgt", height )
+    , ( "hcl", hairColor )
+    , ( "ecl", eyeColor )
+    , ( "pid", passportId )
+    ]
+
+
+intBetween : Int -> Int -> Parser ()
+intBetween lo hi =
+    P.int |> P.andThen (validateBounds lo hi)
+
+
+validateBounds : Int -> Int -> Int -> Parser ()
+validateBounds lo hi input =
+    if input < lo || input > hi then
+        P.problem "out of bounds"
+
+    else
+        P.succeed ()
+
+
+type Height
+    = Centimeters Int
+    | Inches Int
+
+
+height : Parser ()
+height =
+    P.succeed (|>)
+        |= P.int
+        |= P.oneOf
+            [ P.succeed Centimeters
+                |. P.keyword "cm"
+            , P.succeed Inches
+                |. P.keyword "in"
+            ]
+        |> P.andThen
+            (\h ->
+                case h of
+                    Centimeters i ->
+                        validateBounds 150 193 i
+
+                    Inches i ->
+                        validateBounds 59 76 i
+            )
+
+
+hairColor : Parser ()
+hairColor =
+    P.symbol "#"
+        |. stringOfLengthOf 6 Char.isHexDigit
+
+
+eyeColor : Parser ()
+eyeColor =
+    P.oneOf <|
+        List.map P.keyword
+            [ "amb"
+            , "blu"
+            , "brn"
+            , "gry"
+            , "grn"
+            , "hzl"
+            , "oth"
+            ]
+
+
+passportId : Parser ()
+passportId =
+    stringOfLengthOf 9 Char.isDigit
+
+
+stringOfLengthOf : Int -> (Char -> Bool) -> Parser ()
+stringOfLengthOf n charType =
+    P.chompWhile charType
+        |> P.getChompedString
+        |> P.andThen
+            (\s ->
+                if String.length s == n then
+                    P.succeed ()
+
+                else
+                    P.problem <| "not " ++ String.fromInt n ++ " chars"
+            )
+
+
+
+-- PASSPORT PARSER
+
+
 parsePassports : String -> Result (List P.DeadEnd) (List Passport)
 parsePassports =
     P.run passportsParser
-
-
-isPassportValid : Passport -> Bool
-isPassportValid passport =
-    List.all (flip Dict.member passport) requiredFields
-
-
-requiredFields =
-    [ "byr"
-    , "iyr"
-    , "eyr"
-    , "hgt"
-    , "hcl"
-    , "ecl"
-    , "pid"
-    ]
 
 
 passportsParser : Parser (List Passport)
@@ -81,6 +208,43 @@ isValue c =
 isSpace : Char -> Bool
 isSpace c =
     c == ' ' || c == '\n'
+
+
+
+-- INPUT
+
+
+exampleInvalid : String
+exampleInvalid =
+    """eyr:1972 cid:100
+hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926
+
+iyr:2019
+hcl:#602927 eyr:1967 hgt:170cm
+ecl:grn pid:012533040 byr:1946
+
+hcl:dab227 iyr:2012
+ecl:brn hgt:182cm pid:021572410 eyr:2020 byr:1992 cid:277
+
+hgt:59cm ecl:zzz
+eyr:2038 hcl:74454a iyr:2023
+pid:3556412378 byr:2007"""
+
+
+exampleValid : String
+exampleValid =
+    """pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
+hcl:#623a2f
+
+eyr:2029 ecl:blu cid:129 byr:1989
+iyr:2014 pid:896056539 hcl:#a97842 hgt:165cm
+
+hcl:#888785
+hgt:164cm byr:2001 iyr:2015 cid:88
+pid:545766238 ecl:hzl
+eyr:2022
+
+iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719"""
 
 
 puzzleInput : String
