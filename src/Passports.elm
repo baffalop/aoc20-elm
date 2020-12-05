@@ -163,7 +163,7 @@ passportsParser =
         \passports ->
             P.oneOf
                 [ passportParser
-                    |> P.map (\passport -> P.Loop <| passport :: passports)
+                    |> P.map (flip (::) passports >> P.Loop)
                 , P.succeed (P.Done passports)
                     |. P.end
                 ]
@@ -175,7 +175,7 @@ passportParser =
         \dict ->
             P.oneOf
                 [ keyValueParser
-                    |> P.map (\( key, value ) -> P.Loop <| Dict.insert key value dict)
+                    |> P.map (\( key, value ) -> Dict.insert key value dict |> P.Loop)
                 , if dict == Dict.empty then
                     P.problem "Empty passport"
 
