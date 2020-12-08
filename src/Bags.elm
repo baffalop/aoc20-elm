@@ -74,7 +74,7 @@ reverse =
         >> List.foldl
             (\( bag, contents ) rules ->
                 List.foldl
-                    (\( count, containedBag ) -> appendToKey containedBag ( count, bag ))
+                    (\( count, innerBag ) -> appendToKey innerBag ( count, bag ))
                     rules
                     contents
             )
