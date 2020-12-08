@@ -1,7 +1,9 @@
-module Bags exposing (parseRules, puzzleInput)
+module Bags exposing (countBagsContainingShinyGold, parseRules, puzzleInput)
 
+import Basics.Extra exposing (flip)
 import Dict exposing (Dict)
 import Parser as P exposing ((|.), (|=), Parser)
+import Set exposing (Set)
 
 
 type alias Rules =
@@ -10,7 +12,7 @@ type alias Rules =
 
 type alias Rule =
     { bag : String
-    , contains : Contents
+    , contents : Contents
     }
 
 
@@ -19,19 +21,54 @@ type alias Contents =
 
 
 parseRules =
-    P.run rulesParser
+    P.run rulesParser >> Result.withDefault Dict.empty
 
 
+countBagsContainingShinyGold : Rules -> Int
+countBagsContainingShinyGold =
+    nodesFrom "shiny gold" >> Set.size
+
+
+nodesFrom : String -> Rules -> Set String
+nodesFrom bag rules =
+    case Dict.get bag rules of
+        Nothing ->
+            Set.empty
+
+        Just containedBy ->
+            let
+                bags =
+                    List.map Tuple.second containedBy
+            in
+            List.map (flip nodesFrom rules) bags
+                |> List.foldl Set.union (Set.fromList bags)
+
+
+{-| Parses a reversed graph so the dict maps a bag to the bags that contain it
+-}
 rulesParser : Parser Rules
 rulesParser =
     P.loop Dict.empty <|
         \rules ->
             P.oneOf
                 [ ruleParser
-                    |> P.map (\{ bag, contains } -> Dict.insert bag contains rules |> P.Loop)
+                    |> P.map (\rule -> insertRule rule rules |> P.Loop)
                 , P.succeed (P.Done rules)
                     |. P.end
                 ]
+
+
+insertRule : Rule -> Rules -> Rules
+insertRule { bag, contents } inputRules =
+    List.foldl
+        (\( n, containedBag ) -> appendToKey containedBag ( n, bag ))
+        inputRules
+        contents
+
+
+appendToKey : comparable -> a -> Dict comparable (List a) -> Dict comparable (List a)
+appendToKey key item =
+    Dict.update key (Maybe.withDefault [] >> (::) item >> Just)
 
 
 ruleParser : Parser Rule
