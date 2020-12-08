@@ -66,6 +66,8 @@ nodesFrom bag rules =
                 |> List.foldl Set.union (Set.fromList bags)
 
 
+{-| Reverse the direction of the graph: from a dict of bag -> contents, to a dict of bag -> containedIn
+-}
 reverse : Rules -> Rules
 reverse =
     Dict.toList
