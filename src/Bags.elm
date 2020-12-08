@@ -26,7 +26,27 @@ parseRules =
 
 countBagsContainingShinyGold : Rules -> Int
 countBagsContainingShinyGold =
-    nodesFrom "shiny gold" >> Set.size
+    reverse
+        >> nodesFrom "shiny gold"
+        >> Set.size
+
+
+reverse : Rules -> Rules
+reverse =
+    Dict.toList
+        >> List.foldl
+            (\( bag, contents ) rules ->
+                List.foldl
+                    (\( count, containedBag ) -> appendToKey containedBag ( count, bag ))
+                    rules
+                    contents
+            )
+            Dict.empty
+
+
+appendToKey : comparable -> a -> Dict comparable (List a) -> Dict comparable (List a)
+appendToKey key item =
+    Dict.update key (Maybe.withDefault [] >> (::) item >> Just)
 
 
 nodesFrom : String -> Rules -> Set String
@@ -44,31 +64,16 @@ nodesFrom bag rules =
                 |> List.foldl Set.union (Set.fromList bags)
 
 
-{-| Parses a reversed graph so the dict maps a bag to the bags that contain it
--}
 rulesParser : Parser Rules
 rulesParser =
     P.loop Dict.empty <|
         \rules ->
             P.oneOf
                 [ ruleParser
-                    |> P.map (\rule -> insertRule rule rules |> P.Loop)
+                    |> P.map (\{ bag, contents } -> Dict.insert bag contents rules |> P.Loop)
                 , P.succeed (P.Done rules)
                     |. P.end
                 ]
-
-
-insertRule : Rule -> Rules -> Rules
-insertRule { bag, contents } inputRules =
-    List.foldl
-        (\( n, containedBag ) -> appendToKey containedBag ( n, bag ))
-        inputRules
-        contents
-
-
-appendToKey : comparable -> a -> Dict comparable (List a) -> Dict comparable (List a)
-appendToKey key item =
-    Dict.update key (Maybe.withDefault [] >> (::) item >> Just)
 
 
 ruleParser : Parser Rule
