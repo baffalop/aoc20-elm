@@ -1,4 +1,4 @@
-module Bags exposing (countBagsContainingShinyGold, parseRules, puzzleInput)
+module Bags exposing (countBagsContainedInShinyGold, countBagsContainingShinyGold, parseRules, puzzleInput)
 
 import Basics.Extra exposing (flip)
 import Dict exposing (Dict)
@@ -31,6 +31,41 @@ countBagsContainingShinyGold =
         >> Set.size
 
 
+countBagsContainedInShinyGold : Rules -> Int
+countBagsContainedInShinyGold =
+    countBagsContainedIn "shiny gold"
+
+
+countBagsContainedIn : String -> Rules -> Int
+countBagsContainedIn bag rules =
+    case Dict.get bag rules of
+        Nothing ->
+            0
+
+        Just contents ->
+            let
+                countInnerBag ( count, innerBag ) =
+                    count + (count * countBagsContainedIn innerBag rules)
+            in
+            List.map countInnerBag contents
+                |> List.sum
+
+
+nodesFrom : String -> Rules -> Set String
+nodesFrom bag rules =
+    case Dict.get bag rules of
+        Nothing ->
+            Set.empty
+
+        Just containedBy ->
+            let
+                bags =
+                    List.map Tuple.second containedBy
+            in
+            List.map (flip nodesFrom rules) bags
+                |> List.foldl Set.union (Set.fromList bags)
+
+
 reverse : Rules -> Rules
 reverse =
     Dict.toList
@@ -47,21 +82,6 @@ reverse =
 appendToKey : comparable -> a -> Dict comparable (List a) -> Dict comparable (List a)
 appendToKey key item =
     Dict.update key (Maybe.withDefault [] >> (::) item >> Just)
-
-
-nodesFrom : String -> Rules -> Set String
-nodesFrom bag rules =
-    case Dict.get bag rules of
-        Nothing ->
-            Set.empty
-
-        Just containedBy ->
-            let
-                bags =
-                    List.map Tuple.second containedBy
-            in
-            List.map (flip nodesFrom rules) bags
-                |> List.foldl Set.union (Set.fromList bags)
 
 
 rulesParser : Parser Rules
