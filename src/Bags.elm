@@ -20,6 +20,7 @@ type alias Contents =
     List ( Int, String )
 
 
+parseRules : String -> Rules
 parseRules =
     P.run rulesParser >> Result.withDefault Dict.empty
 
