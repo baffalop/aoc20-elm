@@ -90,7 +90,7 @@ contentsParser =
     P.oneOf
         [ P.loop [] <|
             \contents ->
-                P.succeed Tuple.pair
+                P.succeed (\count bag loopStep -> loopStep <| ( count, bag ) :: contents)
                     |= P.int
                     |. P.spaces
                     |= bagType
@@ -99,20 +99,13 @@ contentsParser =
                         [ P.keyword "bag"
                         , P.keyword "bags"
                         ]
-                    |> P.andThen
-                        (\bag ->
-                            let
-                                result =
-                                    bag :: contents
-                            in
-                            P.oneOf
-                                [ P.succeed (P.Loop result)
-                                    |. P.symbol ","
-                                    |. P.spaces
-                                , P.succeed (P.Done result)
-                                    |. P.symbol "."
-                                ]
-                        )
+                    |= P.oneOf
+                        [ P.succeed P.Loop
+                            |. P.symbol ","
+                            |. P.spaces
+                        , P.succeed P.Done
+                            |. P.symbol "."
+                        ]
         , P.succeed []
             |. P.keyword "no other bags."
         ]
