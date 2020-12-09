@@ -1,0 +1,11 @@
+{
+  "name": "advent20-elm",
+  "version": "1.0.0",
+  "description": "Solutions to Advent of Code 2020 in Elm",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nikita Gaidakov",
+  "license": "ISC"
+}
