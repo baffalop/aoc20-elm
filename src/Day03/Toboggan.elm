@@ -1,52 +1,53 @@
-module Day03.Toboggan exposing (assessSlopes, countTreesAtSlope, puzzleInput)
+module Day03.Toboggan exposing (puzzleInput, solve1, solve2)
 
 import Basics.Extra exposing (flip)
 import Char exposing (Char)
 
 
-assessSlopes : String -> List Int
-assessSlopes input =
+solve1 : String -> Int
+solve1 =
+    readTerrain >> countTreesAtSlope ( 3, 1 )
+
+
+solve2 : String -> Int
+solve2 input =
     let
         terrain =
             readTerrain input
     in
-    slopes
-        |> List.map (flip countTreesAtSlope terrain)
-
-
-slopes : List ( Int, Int )
-slopes =
     [ ( 1, 1 )
     , ( 3, 1 )
     , ( 5, 1 )
     , ( 7, 1 )
     , ( 1, 2 )
     ]
+        |> List.map (flip countTreesAtSlope terrain)
+        |> List.sum
 
 
-countTreesAtSlope : ( Int, Int ) -> List (List Terrain) -> Int
+type Tile
+    = Tree
+    | Ground
+
+
+countTreesAtSlope : ( Int, Int ) -> List (List Tile) -> Int
 countTreesAtSlope slope =
     traverse 0 slope >> countTrees
 
 
-countTrees : List Terrain -> Int
+countTrees : List Tile -> Int
 countTrees =
     List.filter ((==) Tree) >> List.length
 
 
 traverse : Int -> ( Int, Int ) -> List (List a) -> List a
 traverse x (( across, down ) as slope) plane =
-    case plane of
-        [] ->
+    case List.head plane |> Maybe.andThen (atWrappedIndex x) of
+        Nothing ->
             []
 
-        row :: columns ->
-            case row |> atWrappedIndex x of
-                Nothing ->
-                    []
-
-                Just a ->
-                    a :: traverse (x + across) slope (plane |> List.drop down)
+        Just a ->
+            a :: traverse (x + across) slope (plane |> List.drop down)
 
 
 atWrappedIndex : Int -> List a -> Maybe a
@@ -56,12 +57,7 @@ atWrappedIndex index list =
         |> List.head
 
 
-type Terrain
-    = Tree
-    | Ground
-
-
-readTerrain : String -> List (List Terrain)
+readTerrain : String -> List (List Tile)
 readTerrain =
     read2d <|
         \c ->

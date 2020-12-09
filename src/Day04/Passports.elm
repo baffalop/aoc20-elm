@@ -1,40 +1,29 @@
-module Day04.Passports exposing
-    ( debugValidatedPassport
-    , exampleInvalid
-    , exampleValid
-    , hasRequiredFields
-    , hasValidFields
-    , parsePassports
-    , puzzleInput
-    , validatePassportsWith
-    )
+module Day04.Passports exposing (puzzleInput, solve1, solve2)
 
 import Basics.Extra exposing (flip)
 import Dict exposing (Dict)
 import Parser as P exposing ((|.), (|=), Parser)
 
 
+solve1 : String -> Int
+solve1 =
+    validatePassportsWith hasRequiredFields >> List.length
+
+
+solve2 : String -> Int
+solve2 =
+    validatePassportsWith hasValidFields >> List.length
+
+
 type alias Passport =
     Dict String String
 
 
-validatePassportsWith : (Passport -> Bool) -> String -> Result (List P.DeadEnd) (List Passport)
+validatePassportsWith : (Passport -> Bool) -> String -> List Passport
 validatePassportsWith validator =
     parsePassports
-        >> Result.map (List.filter validator)
-
-
-debugValidatedPassport : Passport -> Dict String (Result (List P.DeadEnd) ())
-debugValidatedPassport passport =
-    List.map
-        (\( field, validator ) ->
-            Dict.get field passport
-                |> Result.fromMaybe []
-                |> Result.andThen (P.run validator)
-                |> Tuple.pair field
-        )
-        fieldValidators
-        |> Dict.fromList
+        >> Result.withDefault []
+        >> List.filter validator
 
 
 hasRequiredFields : Passport -> Bool
@@ -51,6 +40,19 @@ hasValidFields passport =
                 |> (not << (==) Nothing)
         )
         fieldValidators
+
+
+debugValidatedPassport : Passport -> Dict String (Result (List P.DeadEnd) ())
+debugValidatedPassport passport =
+    List.map
+        (\( field, validator ) ->
+            Dict.get field passport
+                |> Result.fromMaybe []
+                |> Result.andThen (P.run validator)
+                |> Tuple.pair field
+        )
+        fieldValidators
+        |> Dict.fromList
 
 
 

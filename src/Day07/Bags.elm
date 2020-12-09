@@ -1,9 +1,22 @@
-module Day07.Bags exposing (countBagsContainedInShinyGold, countBagsContainingShinyGold, parseRules, puzzleInput)
+module Day07.Bags exposing (parseRules, puzzleInput, solve1, solve2)
 
 import Basics.Extra exposing (flip)
 import Dict exposing (Dict)
 import Parser as P exposing ((|.), (|=), Parser)
 import Set exposing (Set)
+
+
+solve1 : String -> Int
+solve1 =
+    parseRules
+        >> reverse
+        >> nodesFrom "shiny gold"
+        >> Set.size
+
+
+solve2 : String -> Int
+solve2 =
+    parseRules >> countBagsContainedIn "shiny gold"
 
 
 type alias Rules =
@@ -23,18 +36,6 @@ type alias Contents =
 parseRules : String -> Rules
 parseRules =
     P.run rulesParser >> Result.withDefault Dict.empty
-
-
-countBagsContainingShinyGold : Rules -> Int
-countBagsContainingShinyGold =
-    reverse
-        >> nodesFrom "shiny gold"
-        >> Set.size
-
-
-countBagsContainedInShinyGold : Rules -> Int
-countBagsContainedInShinyGold =
-    countBagsContainedIn "shiny gold"
 
 
 countBagsContainedIn : String -> Rules -> Int

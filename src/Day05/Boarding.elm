@@ -1,8 +1,18 @@
-module Day05.Boarding exposing (findMySeat, parseSeats, puzzleInput)
+module Day05.Boarding exposing (puzzleInput, solve1, solve2)
 
 import Basics.Extra exposing (flip)
 import Parser as P exposing ((|.), (|=), Parser)
 import Set
+
+
+solve1 : String -> Maybe Int
+solve1 =
+    parseSeats >> List.maximum
+
+
+solve2 : String -> Maybe Int
+solve2 =
+    parseSeats >> findMySeat >> List.head
 
 
 parseSeats : String -> List Int

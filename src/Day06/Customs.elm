@@ -1,16 +1,16 @@
-module Day06.Customs exposing (parseAnswers, puzzleInput, sumAnswers)
+module Day06.Customs exposing (puzzleInput, solve1, solve2)
 
 import Set exposing (Set)
 
 
-parseAllAnswers : String -> List (Set Char)
-parseAllAnswers =
-    parseAnswers Set.union
+solve1 : String -> Int
+solve1 =
+    parseAnswers Set.union >> sumAnswers
 
 
-parseCommonAnswers : String -> List (Set Char)
-parseCommonAnswers =
-    parseAnswers Set.intersect
+solve2 : String -> Int
+solve2 =
+    parseAnswers Set.intersect >> sumAnswers
 
 
 sumAnswers : List (Set Char) -> Int
@@ -18,17 +18,17 @@ sumAnswers =
     List.map Set.size >> List.sum
 
 
-type alias Aggregator =
-    Set Char -> Set Char -> Set Char
+type alias Aggregator a =
+    Set a -> Set a -> Set a
 
 
-parseAnswers : Aggregator -> String -> List (Set Char)
+parseAnswers : Aggregator Char -> String -> List (Set Char)
 parseAnswers aggregator =
     String.split "\n\n"
         >> List.map (parseGroup aggregator)
 
 
-parseGroup : Aggregator -> String -> Set Char
+parseGroup : Aggregator Char -> String -> Set Char
 parseGroup aggregator =
     String.lines
         >> List.map (String.toList >> Set.fromList)

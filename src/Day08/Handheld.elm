@@ -1,7 +1,22 @@
-module Day08.Handheld exposing (debug, fix, parseProgram, puzzleInput)
+module Day08.Handheld exposing (puzzleInput, solve1, solve2)
 
 import Array exposing (Array)
 import Parser as P exposing ((|.), (|=), Parser)
+
+
+solve1 : String -> DebugResult
+solve1 =
+    parseProgram >> init >> run Debug
+
+
+solve2 : String -> DebugResult
+solve2 =
+    parseProgram >> init >> run Fix
+
+
+type Mode
+    = Debug
+    | Fix
 
 
 type Instruction
@@ -22,21 +37,6 @@ type DebugResult
     = Error Program String
     | Looped (List Int) Int
     | Terminated (List Int) Int
-
-
-type Mode
-    = Debug
-    | Fix
-
-
-debug : Array Instruction -> DebugResult
-debug =
-    init >> run Debug
-
-
-fix : Array Instruction -> DebugResult
-fix =
-    init >> run Fix
 
 
 init : Array Instruction -> Program

@@ -1,6 +1,18 @@
-module Day02.Passwords exposing (parseInput, puzzleInput, validNewPasswords, validOldPasswords)
+module Day02.Passwords exposing (parseInput, puzzleInput, solve1, solve2)
 
 import Parser as P exposing ((|.), (|=), Parser)
+
+
+solve1 : String -> Int
+solve1 =
+    validPasswords OldPassword validateOldPassword
+        >> List.length
+
+
+solve2 : String -> Int
+solve2 =
+    validPasswords NewPassword validateNewPassword
+        >> List.length
 
 
 type alias OldPassword =
@@ -21,16 +33,6 @@ type alias NewPassword =
 
 type alias Tagger a =
     Int -> Int -> Char -> String -> a
-
-
-validOldPasswords : String -> List OldPassword
-validOldPasswords =
-    validPasswords OldPassword validateOldPassword
-
-
-validNewPasswords : String -> List NewPassword
-validNewPasswords =
-    validPasswords NewPassword validateNewPassword
 
 
 validPasswords : Tagger password -> (password -> Validity) -> String -> List password
