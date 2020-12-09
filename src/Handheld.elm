@@ -1,4 +1,4 @@
-module Handheld exposing (debug, parseProgram, puzzleInput)
+module Handheld exposing (debug, fix, parseProgram, puzzleInput)
 
 import Array exposing (Array)
 import Parser as P exposing ((|.), (|=), Parser)
@@ -18,40 +18,82 @@ type alias Program =
     }
 
 
+type DebugResult
+    = Error Program String
+    | Looped (List Int) Int
+    | Terminated (List Int) Int
+
+
+type Mode
+    = Debug
+    | Fix
+
+
+debug : Array Instruction -> DebugResult
+debug =
+    init >> run Debug
+
+
+fix : Array Instruction -> DebugResult
+fix =
+    init >> run Fix
+
+
 init : Array Instruction -> Program
 init instructions =
     Program instructions 0 0 []
 
 
-debug : Array Instruction -> Result String ( List Int, Int )
-debug =
-    init
-        >> runUntilLoop
-        >> Result.map (\{ acc, trace } -> ( trace, acc ))
-
-
-runUntilLoop : Program -> Result String Program
-runUntilLoop ({ instructions, acc, index, trace } as program) =
+run : Mode -> Program -> DebugResult
+run mode ({ instructions, acc, index, trace } as prog) =
     if List.member index trace then
-        Ok program
+        Looped trace acc
 
     else
         let
             traced =
-                { program | trace = index :: trace }
+                { prog | trace = index :: trace }
         in
         case Array.get index instructions of
             Nothing ->
-                Err <| "Index " ++ String.fromInt index ++ " out of bounds"
+                if index == Array.length instructions then
+                    Terminated trace acc
+
+                else
+                    Error prog <| "Index " ++ String.fromInt index ++ " out of bounds"
 
             Just (Acc n) ->
-                runUntilLoop { traced | acc = acc + n, index = index + 1 }
+                run mode { traced | acc = acc + n, index = index + 1 }
 
             Just (Jmp n) ->
-                runUntilLoop { traced | index = index + n }
+                tryJmp n 1 mode traced
 
-            Just (Nop _) ->
-                runUntilLoop { traced | index = index + 1 }
+            Just (Nop n) ->
+                tryJmp 1 n mode traced
+
+
+tryJmp : Int -> Int -> Mode -> Program -> DebugResult
+tryJmp actualJump alternativeJump mode prog =
+    case mode of
+        Debug ->
+            doJmp actualJump mode prog
+
+        Fix ->
+            let
+                resultWithFix =
+                    doJmp alternativeJump Debug prog
+            in
+            case resultWithFix of
+                Terminated _ _ ->
+                    resultWithFix
+
+                _ ->
+                    doJmp actualJump Fix prog
+
+
+doJmp : Int -> Mode -> Program -> DebugResult
+doJmp n mode ({ index } as program) =
+    run mode { program | index = index + n }
 
 
 parseProgram : String -> Array Instruction
