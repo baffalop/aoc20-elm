@@ -1,4 +1,4 @@
-module Bags exposing (countBagsContainedInShinyGold, countBagsContainingShinyGold, parseRules, puzzleInput)
+module Day07.Bags exposing (countBagsContainedInShinyGold, countBagsContainingShinyGold, parseRules, puzzleInput)
 
 import Basics.Extra exposing (flip)
 import Dict exposing (Dict)

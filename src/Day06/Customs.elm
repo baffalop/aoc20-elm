@@ -1,4 +1,4 @@
-module Customs exposing (parseAnswers, puzzleInput, sumAnswers)
+module Day06.Customs exposing (parseAnswers, puzzleInput, sumAnswers)
 
 import Set exposing (Set)
 

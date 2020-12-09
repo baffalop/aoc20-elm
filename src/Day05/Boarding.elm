@@ -1,4 +1,4 @@
-module Boarding exposing (findMySeat, parseSeats, puzzleInput)
+module Day05.Boarding exposing (findMySeat, parseSeats, puzzleInput)
 
 import Basics.Extra exposing (flip)
 import Parser as P exposing ((|.), (|=), Parser)

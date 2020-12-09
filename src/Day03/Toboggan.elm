@@ -1,4 +1,4 @@
-module Toboggan exposing (assessSlopes, countTreesAtSlope, puzzleInput)
+module Day03.Toboggan exposing (assessSlopes, countTreesAtSlope, puzzleInput)
 
 import Basics.Extra exposing (flip)
 import Char exposing (Char)

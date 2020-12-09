@@ -1,4 +1,4 @@
-module Report exposing (puzzleInput, repair, repairThrees)
+module Day01.Report exposing (puzzleInput, repair, repairThrees)
 
 import Set exposing (Set)
 

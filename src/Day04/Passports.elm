@@ -1,4 +1,4 @@
-module Passports exposing
+module Day04.Passports exposing
     ( debugValidatedPassport
     , exampleInvalid
     , exampleValid

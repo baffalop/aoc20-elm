@@ -1,4 +1,4 @@
-module Handheld exposing (debug, fix, parseProgram, puzzleInput)
+module Day08.Handheld exposing (debug, fix, parseProgram, puzzleInput)
 
 import Array exposing (Array)
 import Parser as P exposing ((|.), (|=), Parser)

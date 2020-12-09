@@ -1,4 +1,4 @@
-module Passwords exposing (parseInput, puzzleInput, validNewPasswords, validOldPasswords)
+module Day02.Passwords exposing (parseInput, puzzleInput, validNewPasswords, validOldPasswords)
 
 import Parser as P exposing ((|.), (|=), Parser)
 
