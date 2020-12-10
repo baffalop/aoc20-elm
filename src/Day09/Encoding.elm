@@ -1,6 +1,6 @@
-module Day09.Encoding exposing (puzzleInput, solve1)
+module Day09.Encoding exposing (puzzleInput, solve1, solve2)
 
-import Basics.Extra exposing (uncurry)
+import Basics.Extra exposing (flip, uncurry)
 import Day01.Report exposing (findPairsSummingTo)
 import List.Extra
 
@@ -8,6 +8,37 @@ import List.Extra
 solve1 : String -> Maybe Int
 solve1 =
     parse >> findAnomaly
+
+
+solve2 : String -> Maybe Int
+solve2 input =
+    let
+        parsed =
+            parse input
+    in
+    parsed
+        |> findAnomaly
+        |> Maybe.andThen (flip findContiguousSummingTo parsed)
+        |> Maybe.andThen range
+        |> Maybe.map (\( x, y ) -> x + y)
+
+
+findContiguousSummingTo : Int -> List Int -> Maybe (List Int)
+findContiguousSummingTo target =
+    let
+        go input window =
+            case compare target <| List.sum window of
+                LT ->
+                    go input <| pop window
+
+                EQ ->
+                    Just window
+
+                GT ->
+                    List.Extra.uncons input
+                        |> Maybe.andThen (\( x, xs ) -> go xs <| append x window)
+    in
+    flip go []
 
 
 findAnomaly : List Int -> Maybe Int
@@ -19,21 +50,36 @@ findAnomaly =
 When the test passes, return that element.
 -}
 roll : Int -> (a -> List a -> Bool) -> List a -> Maybe a
-roll n f =
-    List.Extra.splitAt n >> uncurry (rollHelp f)
+roll n test =
+    let
+        go : List a -> List a -> Maybe a
+        go preamble input =
+            List.head input
+                |> Maybe.andThen
+                    (\x ->
+                        if test x preamble then
+                            Just x
+
+                        else
+                            go (pop preamble |> append x) (pop input)
+                    )
+    in
+    List.Extra.splitAt n >> uncurry go
 
 
-rollHelp : (a -> List a -> Bool) -> List a -> List a -> Maybe a
-rollHelp test preamble input =
-    List.head input
-        |> Maybe.andThen
-            (\x ->
-                if test x preamble then
-                    Just x
+range : List comparable -> Maybe ( comparable, comparable )
+range list =
+    Maybe.map2 Tuple.pair (List.minimum list) (List.maximum list)
 
-                else
-                    rollHelp test (List.drop 1 preamble ++ [ x ]) (List.drop 1 input)
-            )
+
+pop : List a -> List a
+pop =
+    List.drop 1
+
+
+append : a -> List a -> List a
+append =
+    List.singleton >> flip (++)
 
 
 parse : String -> List Int
