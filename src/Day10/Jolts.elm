@@ -1,4 +1,4 @@
-module Day10.Jolts exposing (..)
+module Day10.Jolts exposing (puzzleInput, solve1, solve2)
 
 import Basics.Extra exposing (flip, uncurry)
 import Dict exposing (Dict)
@@ -14,6 +14,14 @@ solve1 =
         >> uncurry (Maybe.map2 (*))
 
 
+solve2 =
+    parse
+        >> differences
+        >> chunkWhen ((==) 1)
+        >> List.map (List.length >> localChoices)
+        >> List.product
+
+
 differences : List Int -> List Int
 differences =
     List.sort
@@ -26,6 +34,56 @@ counts =
     List.foldl
         (flip Dict.update <| Maybe.withDefault 0 >> (+) 1 >> Just)
         Dict.empty
+
+
+{-| Chunk contiguous elements that pass a test (discard the elements that don't)
+-}
+chunkWhen : (a -> Bool) -> List a -> List (List a)
+chunkWhen test =
+    List.foldr
+        (\x ( chunk, result ) ->
+            if test x then
+                ( x :: chunk, result )
+
+            else if chunk == [] then
+                ( chunk, result )
+
+            else
+                ( [], chunk :: result )
+        )
+        ( [], [] )
+        >> uncurry (::)
+
+
+{-| From a set of adaptors n all 1 jolt apart, how many choices are there?
+You always have to pick the rightmost because the next is 3 jolts away; so let n' be n - 1.
+If n' <= 2, you can choose 0 to n'.
+If n' = 3, you can choose at least 1 out of the 3.
+...and in the puzzleInput there are no chunks of n > 4 so let's not think about it.
+-}
+localChoices : Int -> Int
+localChoices n =
+    n - 1 |> chooseAtLeast (max 0 <| n - 3)
+
+
+{-| Number of unordered combinations of m-n elements from a set of n
+In other words, the sum of k choose n where k=m to n
+-}
+chooseAtLeast : Int -> Int -> Int
+chooseAtLeast m n =
+    List.range m n
+        |> List.map (flip choose n)
+        |> List.sum
+
+
+choose : Int -> Int -> Int
+choose k n =
+    factorial n // (factorial k * factorial (n - k))
+
+
+factorial : Int -> Int
+factorial =
+    List.range 1 >> List.product
 
 
 fork : (a -> b) -> (a -> c) -> a -> ( b, c )
