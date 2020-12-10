@@ -1,20 +1,25 @@
-module Day01.Report exposing (puzzleInput, solve1, solve2)
+module Day01.Report exposing (findPairsSummingTo, puzzleInput, solve1, solve2)
 
 import Set exposing (Set)
 
 
 solve1 : String -> Maybe ( Int, Int )
 solve1 =
-    parseInput >> findPairsSummingTo 2020 Set.empty
+    parseInput >> findPairsSummingTo 2020
 
 
 solve2 : String -> Maybe ( Int, Int, Int )
 solve2 =
-    parseInput >> findThreesSummingTo 2020 []
+    parseInput >> findThreesSummingTo 2020
 
 
-findPairsSummingTo : Int -> Set Int -> List Int -> Maybe ( Int, Int )
-findPairsSummingTo sum seen input =
+findPairsSummingTo : Int -> List Int -> Maybe ( Int, Int )
+findPairsSummingTo =
+    findPairsHelp Set.empty
+
+
+findPairsHelp : Set Int -> Int -> List Int -> Maybe ( Int, Int )
+findPairsHelp seen sum input =
     case input of
         [] ->
             Nothing
@@ -28,19 +33,24 @@ findPairsSummingTo sum seen input =
                 Just ( x, complement )
 
             else
-                findPairsSummingTo sum (Set.insert x seen) xs
+                findPairsHelp (Set.insert x seen) sum xs
 
 
-findThreesSummingTo : Int -> List Int -> List Int -> Maybe ( Int, Int, Int )
-findThreesSummingTo sum seen input =
+findThreesSummingTo : Int -> List Int -> Maybe ( Int, Int, Int )
+findThreesSummingTo =
+    findThreesHelp []
+
+
+findThreesHelp : List Int -> Int -> List Int -> Maybe ( Int, Int, Int )
+findThreesHelp seen sum input =
     case input of
         [] ->
             Nothing
 
         x :: xs ->
-            case findPairsSummingTo (sum - x) Set.empty (seen ++ xs) of
+            case findPairsSummingTo (sum - x) (seen ++ xs) of
                 Nothing ->
-                    findThreesSummingTo sum (x :: seen) xs
+                    findThreesHelp (x :: seen) sum xs
 
                 Just ( a, b ) ->
                     Just ( a, b, x )
