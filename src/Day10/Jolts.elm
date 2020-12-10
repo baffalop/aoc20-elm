@@ -1,5 +1,6 @@
 module Day10.Jolts exposing (..)
 
+import Basics.Extra exposing (flip, uncurry)
 import Dict exposing (Dict)
 
 
@@ -10,7 +11,8 @@ solve1 =
         >> differences
         >> (::) 3
         >> counts
-        >> (\c -> Maybe.map2 (*) (Dict.get 1 c) (Dict.get 3 c))
+        >> fork (Dict.get 1) (Dict.get 3)
+        >> uncurry (Maybe.map2 (*))
 
 
 differences : List Int -> List Int
@@ -21,8 +23,13 @@ differences input =
 counts : List Int -> Dict Int Int
 counts =
     List.foldl
-        (\n -> Dict.update n (Maybe.withDefault 0 >> (+) n >> Just))
+        (flip Dict.update <| Maybe.withDefault 0 >> (+) 1 >> Just)
         Dict.empty
+
+
+fork : (a -> b) -> (a -> c) -> a -> ( b, c )
+fork f g x =
+    ( f x, g x )
 
 
 parse : String -> List Int
