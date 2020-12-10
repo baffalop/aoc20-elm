@@ -2,6 +2,7 @@ module Day10.Jolts exposing (puzzleInput, solve1, solve2)
 
 import Basics.Extra exposing (flip, uncurry)
 import Dict exposing (Dict)
+import Dict.Extra
 
 
 solve1 : String -> Maybe Int
@@ -9,7 +10,7 @@ solve1 =
     parse
         >> differences
         >> (::) 3
-        >> counts
+        >> Dict.Extra.frequencies
         >> fork (Dict.get 1) (Dict.get 3)
         >> uncurry (Maybe.map2 (*))
 
@@ -27,13 +28,6 @@ differences =
     List.sort
         >> with ((::) 0)
         >> uncurry (List.map2 (-))
-
-
-counts : List Int -> Dict Int Int
-counts =
-    List.foldl
-        (flip Dict.update <| Maybe.withDefault 0 >> (+) 1 >> Just)
-        Dict.empty
 
 
 {-| Chunk contiguous elements that pass a test (discard the elements that don't)
