@@ -25,14 +25,22 @@ solve2 input =
         |> List.sum
 
 
+type alias Grid a =
+    List (List a)
+
+
+type alias Terrain =
+    Grid Tile
+
+
 type Tile
     = Tree
     | Ground
 
 
-countTreesAtSlope : ( Int, Int ) -> List (List Tile) -> Int
+countTreesAtSlope : ( Int, Int ) -> Terrain -> Int
 countTreesAtSlope slope =
-    traverse 0 slope >> countTrees
+    slide 0 slope >> countTrees
 
 
 countTrees : List Tile -> Int
@@ -40,14 +48,14 @@ countTrees =
     List.filter ((==) Tree) >> List.length
 
 
-traverse : Int -> ( Int, Int ) -> List (List a) -> List a
-traverse x (( across, down ) as slope) plane =
+slide : Int -> ( Int, Int ) -> Grid a -> List a
+slide x (( across, down ) as slope) plane =
     case List.head plane |> Maybe.andThen (atWrappedIndex x) of
         Nothing ->
             []
 
         Just a ->
-            a :: traverse (x + across) slope (plane |> List.drop down)
+            a :: slide (x + across) slope (plane |> List.drop down)
 
 
 atWrappedIndex : Int -> List a -> Maybe a
@@ -57,7 +65,7 @@ atWrappedIndex index list =
         |> List.head
 
 
-readTerrain : String -> List (List Tile)
+readTerrain : String -> Terrain
 readTerrain =
     read2d <|
         \c ->
@@ -72,7 +80,7 @@ readTerrain =
                     Nothing
 
 
-read2d : (Char -> Maybe a) -> String -> List (List a)
+read2d : (Char -> Maybe a) -> String -> Grid a
 read2d tagger =
     String.lines >> List.map (String.toList >> List.filterMap tagger)
 
