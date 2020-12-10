@@ -20,7 +20,7 @@ solve2 input =
         |> findAnomaly
         |> Maybe.andThen (flip findContiguousSummingTo parsed)
         |> Maybe.andThen range
-        |> Maybe.map (\( x, y ) -> x + y)
+        |> Maybe.map (uncurry (+))
 
 
 findContiguousSummingTo : Int -> List Int -> Maybe (List Int)
