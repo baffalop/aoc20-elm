@@ -78,8 +78,8 @@ pop =
 
 
 append : a -> List a -> List a
-append =
-    List.singleton >> flip (++)
+append x xs =
+    xs ++ [ x ]
 
 
 parse : String -> List Int
