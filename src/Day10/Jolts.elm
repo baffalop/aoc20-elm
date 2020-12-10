@@ -67,7 +67,7 @@ localChoices n =
 
 
 {-| Number of unordered combinations of m-n elements from a set of n
-In other words, the sum of k choose n where k=m to n
+In other words, the sum of n choose k where k=m to n
 -}
 chooseAtLeast : Int -> Int -> Int
 chooseAtLeast m n =
