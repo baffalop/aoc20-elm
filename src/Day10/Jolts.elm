@@ -7,7 +7,6 @@ import Dict exposing (Dict)
 solve1 : String -> Maybe Int
 solve1 =
     parse
-        >> List.sort
         >> differences
         >> (::) 3
         >> counts
@@ -16,8 +15,10 @@ solve1 =
 
 
 differences : List Int -> List Int
-differences input =
-    List.map2 (-) input (0 :: input)
+differences =
+    List.sort
+        >> with ((::) 0)
+        >> uncurry (List.map2 (-))
 
 
 counts : List Int -> Dict Int Int
@@ -30,6 +31,11 @@ counts =
 fork : (a -> b) -> (a -> c) -> a -> ( b, c )
 fork f g x =
     ( f x, g x )
+
+
+with : (a -> b) -> a -> ( a, b )
+with =
+    fork identity
 
 
 parse : String -> List Int
