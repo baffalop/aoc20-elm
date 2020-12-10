@@ -3,12 +3,16 @@ module Day09.Encoding exposing (puzzleInput, solve1)
 import Basics.Extra exposing (uncurry)
 import Day01.Report exposing (findPairsSummingTo)
 import List.Extra
-import Maybe.Extra
 
 
 solve1 : String -> Maybe Int
 solve1 =
-    parse >> roll 25 (\x -> findPairsSummingTo x >> Maybe.Extra.isNothing)
+    parse >> findAnomaly
+
+
+findAnomaly : List Int -> Maybe Int
+findAnomaly =
+    roll 25 (\x -> findPairsSummingTo x >> (==) Nothing)
 
 
 {-| Apply a test to a rolling list of length n and the next element in the input list.
