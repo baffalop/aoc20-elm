@@ -15,36 +15,36 @@ solve2 =
     parseSeats >> findMySeat >> List.head
 
 
-parseSeats : String -> List Int
-parseSeats =
-    String.lines >> List.filterMap (P.run seatId >> Result.toMaybe)
-
-
-findMySeat : List Int -> List Int
-findMySeat =
-    helpFind Set.empty []
-
-
 {-| Based on a stupid interpretation of the problem statement.
 Find all seat ids x where x + 1 and x - 1 are present,
 then whittle those down to those not themselves present.
 -}
-helpFind : Set.Set number -> List number -> List number -> List number
-helpFind seen result input =
-    case input of
-        [] ->
-            List.filter (not << flip Set.member seen) result
+findMySeat : List Int -> List Int
+findMySeat =
+    let
+        search : Set.Set number -> List number -> List number -> List number
+        search seen result input =
+            case input of
+                [] ->
+                    List.filter (not << flip Set.member seen) result
 
-        x :: xs ->
-            let
-                nextResult =
-                    if Set.member (x + 2) seen then
-                        x + 1 :: result
+                x :: xs ->
+                    let
+                        nextResult =
+                            if Set.member (x + 2) seen then
+                                x + 1 :: result
 
-                    else
-                        result
-            in
-            helpFind (Set.insert x seen) nextResult xs
+                            else
+                                result
+                    in
+                    search (Set.insert x seen) nextResult xs
+    in
+    search Set.empty []
+
+
+parseSeats : String -> List Int
+parseSeats =
+    String.lines >> List.filterMap (P.run seatId >> Result.toMaybe)
 
 
 seatId : Parser Int
