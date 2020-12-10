@@ -1,5 +1,6 @@
 module Day01.Report exposing (findPairsSummingTo, puzzleInput, solve1, solve2)
 
+import List.Extra
 import Set exposing (Set)
 
 
@@ -14,46 +15,45 @@ solve2 =
 
 
 findPairsSummingTo : Int -> List Int -> Maybe ( Int, Int )
-findPairsSummingTo =
-    findPairsHelp Set.empty
+findPairsSummingTo sum =
+    let
+        go : Set Int -> List Int -> Maybe ( Int, Int )
+        go seen input =
+            List.Extra.uncons input
+                |> Maybe.andThen
+                    (\( x, xs ) ->
+                        let
+                            complement =
+                                sum - x
+                        in
+                        if Set.member complement seen then
+                            Just ( x, complement )
 
-
-findPairsHelp : Set Int -> Int -> List Int -> Maybe ( Int, Int )
-findPairsHelp seen sum input =
-    case input of
-        [] ->
-            Nothing
-
-        x :: xs ->
-            let
-                complement =
-                    sum - x
-            in
-            if Set.member complement seen then
-                Just ( x, complement )
-
-            else
-                findPairsHelp (Set.insert x seen) sum xs
+                        else
+                            go (Set.insert x seen) xs
+                    )
+    in
+    go Set.empty
 
 
 findThreesSummingTo : Int -> List Int -> Maybe ( Int, Int, Int )
-findThreesSummingTo =
-    findThreesHelp []
+findThreesSummingTo sum =
+    let
+        go : List Int -> List Int -> Maybe ( Int, Int, Int )
+        go seen input =
+            case input of
+                [] ->
+                    Nothing
 
+                x :: xs ->
+                    case findPairsSummingTo (sum - x) (seen ++ xs) of
+                        Nothing ->
+                            go (x :: seen) xs
 
-findThreesHelp : List Int -> Int -> List Int -> Maybe ( Int, Int, Int )
-findThreesHelp seen sum input =
-    case input of
-        [] ->
-            Nothing
-
-        x :: xs ->
-            case findPairsSummingTo (sum - x) (seen ++ xs) of
-                Nothing ->
-                    findThreesHelp (x :: seen) sum xs
-
-                Just ( a, b ) ->
-                    Just ( a, b, x )
+                        Just ( a, b ) ->
+                            Just ( a, b, x )
+    in
+    go []
 
 
 parseInput : String -> List Int
