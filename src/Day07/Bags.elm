@@ -72,15 +72,14 @@ nodesFrom bag rules =
 -}
 reverse : Rules -> Rules
 reverse =
-    Dict.toList
-        >> List.foldl
-            (\( bag, contents ) rules ->
-                List.foldl
-                    (\( count, innerBag ) -> appendToKey innerBag ( count, bag ))
-                    rules
-                    contents
-            )
-            Dict.empty
+    Dict.foldl
+        (\bag contents rules ->
+            List.foldl
+                (\( count, innerBag ) -> appendToKey innerBag ( count, bag ))
+                rules
+                contents
+        )
+        Dict.empty
 
 
 appendToKey : comparable -> a -> Dict comparable (List a) -> Dict comparable (List a)
