@@ -17,8 +17,8 @@ solve2 =
 findPairsSummingTo : Int -> List Int -> Maybe ( Int, Int )
 findPairsSummingTo sum =
     let
-        go : Set Int -> List Int -> Maybe ( Int, Int )
-        go seen input =
+        search : Set Int -> List Int -> Maybe ( Int, Int )
+        search seen input =
             List.Extra.uncons input
                 |> Maybe.andThen
                     (\( x, xs ) ->
@@ -30,17 +30,17 @@ findPairsSummingTo sum =
                             Just ( x, complement )
 
                         else
-                            go (Set.insert x seen) xs
+                            search (Set.insert x seen) xs
                     )
     in
-    go Set.empty
+    search Set.empty
 
 
 findThreesSummingTo : Int -> List Int -> Maybe ( Int, Int, Int )
 findThreesSummingTo sum =
     let
-        go : List Int -> List Int -> Maybe ( Int, Int, Int )
-        go seen input =
+        search : List Int -> List Int -> Maybe ( Int, Int, Int )
+        search seen input =
             case input of
                 [] ->
                     Nothing
@@ -48,12 +48,12 @@ findThreesSummingTo sum =
                 x :: xs ->
                     case findPairsSummingTo (sum - x) (seen ++ xs) of
                         Nothing ->
-                            go (x :: seen) xs
+                            search (x :: seen) xs
 
                         Just ( a, b ) ->
                             Just ( a, b, x )
     in
-    go []
+    search []
 
 
 parseInput : String -> List Int

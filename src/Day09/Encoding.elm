@@ -26,19 +26,19 @@ solve2 input =
 findContiguousSummingTo : Int -> List Int -> Maybe (List Int)
 findContiguousSummingTo target =
     let
-        go input window =
+        search input window =
             case compare target <| List.sum window of
                 LT ->
-                    go input <| pop window
+                    search input <| pop window
 
                 EQ ->
                     Just window
 
                 GT ->
                     List.Extra.uncons input
-                        |> Maybe.andThen (\( x, xs ) -> go xs <| append x window)
+                        |> Maybe.andThen (\( x, xs ) -> search xs <| append x window)
     in
-    flip go []
+    flip search []
 
 
 findAnomaly : List Int -> Maybe Int
@@ -52,8 +52,8 @@ When the test passes, return that element.
 roll : Int -> (a -> List a -> Bool) -> List a -> Maybe a
 roll n test =
     let
-        go : List a -> List a -> Maybe a
-        go preamble input =
+        roll_ : List a -> List a -> Maybe a
+        roll_ preamble input =
             List.head input
                 |> Maybe.andThen
                     (\x ->
@@ -61,10 +61,10 @@ roll n test =
                             Just x
 
                         else
-                            go (pop preamble |> append x) (pop input)
+                            roll_ (pop preamble |> append x) (pop input)
                     )
     in
-    List.Extra.splitAt n >> uncurry go
+    List.Extra.splitAt n >> uncurry roll_
 
 
 range : List comparable -> Maybe ( comparable, comparable )
