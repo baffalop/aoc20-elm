@@ -1,6 +1,6 @@
 module Day10.Jolts exposing (puzzleInput, solve1, solve2)
 
-import Basics.Extra exposing (flip, uncurry)
+import Basics.Extra exposing (flip)
 import Dict exposing (Dict)
 import Dict.Extra
 
@@ -12,7 +12,7 @@ solve1 =
         >> (::) 3
         >> Dict.Extra.frequencies
         >> fork (Dict.get 1) (Dict.get 3)
-        >> uncurry (Maybe.map2 (*))
+        >> apply (Maybe.map2 (*))
 
 
 solve2 =
@@ -27,7 +27,7 @@ differences : List Int -> List Int
 differences =
     List.sort
         >> with ((::) 0)
-        >> uncurry (List.map2 (-))
+        >> apply (List.map2 (-))
 
 
 {-| Chunk contiguous elements that pass a test (discard the elements that don't)
@@ -46,7 +46,7 @@ chunkWhen test =
                 ( [], chunk :: result )
         )
         ( [], [] )
-        >> uncurry (::)
+        >> apply (::)
 
 
 {-| From a set of adaptors n all 1 jolt apart, how many choices are there?
@@ -88,6 +88,12 @@ fork f g x =
 with : (a -> b) -> a -> ( a, b )
 with =
     fork identity
+
+
+apply : (a -> b -> c) -> ( a, b ) -> c
+apply =
+    -- I hate this name
+    Basics.Extra.uncurry
 
 
 parse : String -> List Int

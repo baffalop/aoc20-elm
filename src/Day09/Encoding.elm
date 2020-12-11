@@ -1,6 +1,6 @@
 module Day09.Encoding exposing (puzzleInput, solve1, solve2)
 
-import Basics.Extra exposing (flip, uncurry)
+import Basics.Extra exposing (flip)
 import Day01.Report exposing (findPairsSummingTo)
 import List.Extra
 
@@ -20,7 +20,7 @@ solve2 input =
         |> findAnomaly
         |> Maybe.andThen (flip findContiguousSummingTo parsed)
         |> Maybe.andThen extremes
-        |> Maybe.map (uncurry (+))
+        |> Maybe.map (apply (+))
 
 
 findContiguousSummingTo : Int -> List Int -> Maybe (List Int)
@@ -64,7 +64,7 @@ roll n test =
                             roll_ (pop preamble |> append x) (pop input)
                     )
     in
-    List.Extra.splitAt n >> uncurry roll_
+    List.Extra.splitAt n >> apply roll_
 
 
 extremes : List comparable -> Maybe ( comparable, comparable )
@@ -80,6 +80,12 @@ pop =
 append : a -> List a -> List a
 append x xs =
     xs ++ [ x ]
+
+
+apply : (a -> b -> c) -> ( a, b ) -> c
+apply =
+    -- I hate this name
+    Basics.Extra.uncurry
 
 
 parse : String -> List Int
