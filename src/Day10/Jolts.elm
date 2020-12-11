@@ -1,8 +1,9 @@
-module Day10.Jolts exposing (puzzleInput, solve1, solve2)
+module Day10.Jolts exposing (..)
 
 import Basics.Extra exposing (flip)
 import Dict exposing (Dict)
 import Dict.Extra
+import List.Extra
 
 
 solve1 : String -> Maybe Int
@@ -33,20 +34,13 @@ differences =
 {-| Chunk contiguous elements that pass a test (discard the elements that don't)
 -}
 chunkWhen : (a -> Bool) -> List a -> List (List a)
-chunkWhen test =
-    List.foldr
-        (\x ( chunk, result ) ->
-            if test x then
-                ( x :: chunk, result )
+chunkWhen test input =
+    case List.Extra.dropWhile (not << test) input of
+        [] ->
+            []
 
-            else if chunk == [] then
-                ( chunk, result )
-
-            else
-                ( [], chunk :: result )
-        )
-        ( [], [] )
-        >> apply (::)
+        rest ->
+            List.Extra.takeWhile test rest :: chunkWhen test (List.Extra.dropWhile test rest)
 
 
 {-| From a set of adaptors n all 1 jolt apart, how many choices are there?
