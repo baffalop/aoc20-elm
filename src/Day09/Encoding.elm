@@ -19,7 +19,7 @@ solve2 input =
     parsed
         |> findAnomaly
         |> Maybe.andThen (flip findContiguousSummingTo parsed)
-        |> Maybe.andThen range
+        |> Maybe.andThen extremes
         |> Maybe.map (uncurry (+))
 
 
@@ -67,8 +67,8 @@ roll n test =
     List.Extra.splitAt n >> uncurry roll_
 
 
-range : List comparable -> Maybe ( comparable, comparable )
-range list =
+extremes : List comparable -> Maybe ( comparable, comparable )
+extremes list =
     Maybe.map2 Tuple.pair (List.minimum list) (List.maximum list)
 
 
