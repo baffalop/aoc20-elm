@@ -161,13 +161,37 @@ viewButtons state =
                 ]
 
             Playing ->
-                [ button "Pause" Pause ]
+                [ button "Pause" Pause
+                , button "Reset" Reset
+                ]
 
             Paused ->
-                [ button "Play" Play ]
+                [ button "Play" Play
+                , button "Reset" Reset
+                ]
 
             Done ->
                 [ button "Reset" Reset ]
+
+
+button : String -> msg -> Element msg
+button label onPress =
+    Element.Input.button
+        [ Element.width <| Element.px 110
+        , Element.Background.color <| rgb 33 75 109
+        , Element.Border.rounded 4
+        , Element.padding 10
+        , Element.Font.size 18
+        , Element.Font.color <| rgb 225 240 255
+        , Element.Font.family [ Element.Font.typeface "Helvetica", Element.Font.sansSerif ]
+        , Element.Font.center
+        , Element.mouseOver
+            [ Element.Background.color <| rgb 45 96 138
+            ]
+        ]
+        { onPress = Just onPress
+        , label = Element.text label
+        }
 
 
 viewSeating : Seating -> Element msg
@@ -205,25 +229,6 @@ printTile tile =
 
         Person ->
             "\u{200D}🙎"
-
-
-button : String -> msg -> Element msg
-button label onPress =
-    Element.Input.button
-        [ Element.width Element.shrink
-        , Element.Font.size 18
-        , Element.padding 10
-        , Element.Border.rounded 4
-        , Element.Background.color <| rgb 33 75 109
-        , Element.mouseOver
-            [ Element.Background.color <| rgb 45 96 138
-            ]
-        , Element.Font.color <| rgb 225 240 255
-        , Element.Font.family [ Element.Font.typeface "Helvetica", Element.Font.sansSerif ]
-        ]
-        { onPress = Just onPress
-        , label = Element.text label
-        }
 
 
 

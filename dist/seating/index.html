@@ -12695,6 +12695,8 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
+var $mdgriffith$elm_ui$Internal$Flag$fontAlignment = $mdgriffith$elm_ui$Internal$Flag$flag(12);
+var $mdgriffith$elm_ui$Element$Font$center = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontAlignment, $mdgriffith$elm_ui$Internal$Style$classes.textCenter);
 var $mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
@@ -12873,6 +12875,10 @@ var $mdgriffith$elm_ui$Element$padding = function (x) {
 			f,
 			f));
 };
+var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
 var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
 var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 	return A2(
@@ -12901,18 +12907,13 @@ var $author$project$Day11$Visualisation$button = F2(
 			$mdgriffith$elm_ui$Element$Input$button,
 			_List_fromArray(
 				[
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-					$mdgriffith$elm_ui$Element$Font$size(18),
-					$mdgriffith$elm_ui$Element$padding(10),
-					$mdgriffith$elm_ui$Element$Border$rounded(4),
+					$mdgriffith$elm_ui$Element$width(
+					$mdgriffith$elm_ui$Element$px(110)),
 					$mdgriffith$elm_ui$Element$Background$color(
 					A3($author$project$Day11$Visualisation$rgb, 33, 75, 109)),
-					$mdgriffith$elm_ui$Element$mouseOver(
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$Background$color(
-							A3($author$project$Day11$Visualisation$rgb, 45, 96, 138))
-						])),
+					$mdgriffith$elm_ui$Element$Border$rounded(4),
+					$mdgriffith$elm_ui$Element$padding(10),
+					$mdgriffith$elm_ui$Element$Font$size(18),
 					$mdgriffith$elm_ui$Element$Font$color(
 					A3($author$project$Day11$Visualisation$rgb, 225, 240, 255)),
 					$mdgriffith$elm_ui$Element$Font$family(
@@ -12920,6 +12921,13 @@ var $author$project$Day11$Visualisation$button = F2(
 						[
 							$mdgriffith$elm_ui$Element$Font$typeface('Helvetica'),
 							$mdgriffith$elm_ui$Element$Font$sansSerif
+						])),
+					$mdgriffith$elm_ui$Element$Font$center,
+					$mdgriffith$elm_ui$Element$mouseOver(
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$Background$color(
+							A3($author$project$Day11$Visualisation$rgb, 45, 96, 138))
 						]))
 				]),
 			{
@@ -12972,12 +12980,14 @@ var $author$project$Day11$Visualisation$viewButtons = function (state) {
 				case 'Playing':
 					return _List_fromArray(
 						[
-							A2($author$project$Day11$Visualisation$button, 'Pause', $author$project$Day11$Visualisation$Pause)
+							A2($author$project$Day11$Visualisation$button, 'Pause', $author$project$Day11$Visualisation$Pause),
+							A2($author$project$Day11$Visualisation$button, 'Reset', $author$project$Day11$Visualisation$Reset)
 						]);
 				case 'Paused':
 					return _List_fromArray(
 						[
-							A2($author$project$Day11$Visualisation$button, 'Play', $author$project$Day11$Visualisation$Play)
+							A2($author$project$Day11$Visualisation$button, 'Play', $author$project$Day11$Visualisation$Play),
+							A2($author$project$Day11$Visualisation$button, 'Reset', $author$project$Day11$Visualisation$Reset)
 						]);
 				default:
 					return _List_fromArray(
