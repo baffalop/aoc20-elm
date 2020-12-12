@@ -22,7 +22,7 @@ type alias Coord =
 
 type Instruction
     = Absolute Direction Int
-    | Turn Turn Int
+    | Turn Int
     | Forward Int
 
 
@@ -31,11 +31,6 @@ type Direction
     | S
     | E
     | W
-
-
-type Turn
-    = Left
-    | Right
 
 
 manhattanDistance : Ship -> Int
@@ -60,8 +55,8 @@ do instruction =
         Absolute dir count ->
             doMove dir count
 
-        Turn turn count ->
-            doTurn turn count
+        Turn count ->
+            doTurn count
 
         Forward count ->
             goForward count
@@ -88,8 +83,8 @@ doMove dir count ship =
             { ship | x = ship.x + count }
 
 
-doTurn : Turn -> Int -> Ship -> Ship
-doTurn turn inputCount ship =
+doTurn : Int -> Ship -> Ship
+doTurn inputCount ship =
     let
         count =
             inputCount |> modBy 4
@@ -98,37 +93,22 @@ doTurn turn inputCount ship =
         ship
 
     else
-        doTurn turn
-            (count - 1)
-            { ship | bearing = turnDirection turn ship.bearing }
+        doTurn (count - 1)
+            { ship
+                | bearing =
+                    case ship.bearing of
+                        N ->
+                            E
 
+                        E ->
+                            S
 
-turnDirection : Turn -> Direction -> Direction
-turnDirection turn dir =
-    case ( turn, dir ) of
-        ( Left, N ) ->
-            W
+                        S ->
+                            W
 
-        ( Left, W ) ->
-            S
-
-        ( Left, S ) ->
-            E
-
-        ( Left, E ) ->
-            N
-
-        ( Right, N ) ->
-            E
-
-        ( Right, E ) ->
-            S
-
-        ( Right, S ) ->
-            W
-
-        ( Right, W ) ->
-            N
+                        W ->
+                            N
+            }
 
 
 fork : (a -> b) -> (a -> c) -> a -> ( b, c )
@@ -176,11 +156,11 @@ orientationParser =
                     'W' ->
                         P.succeed <| Absolute W
 
-                    'L' ->
-                        P.succeed <| (flip (//) 90 >> Turn Left)
-
                     'R' ->
-                        P.succeed <| (flip (//) 90 >> Turn Right)
+                        P.succeed <| (flip (//) 90 >> Turn)
+
+                    'L' ->
+                        P.succeed <| (flip (//) 90 >> (*) 3 >> modBy 4 >> Turn)
 
                     'F' ->
                         P.succeed <| Forward
