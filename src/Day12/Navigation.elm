@@ -217,52 +217,29 @@ parse =
 parseInstruction : String -> Result (List P.DeadEnd) Instruction
 parseInstruction =
     P.run <|
-        orientationParser
+        instructionParser
             |= P.int
             |. P.end
 
 
-orientationParser : Parser (Int -> Instruction)
-orientationParser =
-    charParser
-        |> P.andThen
-            (\c ->
-                case c of
-                    'N' ->
-                        P.succeed <| Absolute North
-
-                    'S' ->
-                        P.succeed <| Absolute South
-
-                    'E' ->
-                        P.succeed <| Absolute East
-
-                    'W' ->
-                        P.succeed <| Absolute West
-
-                    'L' ->
-                        P.succeed <| (flip (//) 90 >> Turn Left)
-
-                    'R' ->
-                        P.succeed <| (flip (//) 90 >> Turn Right)
-
-                    'F' ->
-                        P.succeed <| Forward
-
-                    _ ->
-                        P.problem <| "Unrecognised instruction " ++ String.fromChar c
-            )
-
-
-charParser : Parser Char
-charParser =
-    P.chompIf (always True)
-        |> P.getChompedString
-        |> P.andThen
-            (String.uncons
-                >> Maybe.map (Tuple.first >> P.succeed)
-                >> Maybe.withDefault (P.problem "charParser didn't chomp a char")
-            )
+instructionParser : Parser (Int -> Instruction)
+instructionParser =
+    P.oneOf
+        [ P.succeed (Absolute North)
+            |. P.token "N"
+        , P.succeed (Absolute South)
+            |. P.token "S"
+        , P.succeed (Absolute East)
+            |. P.token "E"
+        , P.succeed (Absolute West)
+            |. P.token "W"
+        , P.succeed (flip (//) 90 >> Turn Left)
+            |. P.token "L"
+        , P.succeed (flip (//) 90 >> Turn Right)
+            |. P.token "R"
+        , P.succeed Forward
+            |. P.token "F"
+        ]
 
 
 puzzleInput =
