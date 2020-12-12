@@ -27,10 +27,10 @@ type Instruction
 
 
 type Direction
-    = N
-    | S
-    | E
-    | W
+    = North
+    | South
+    | East
+    | West
 
 
 type Turn
@@ -50,7 +50,7 @@ follow =
     List.foldl do
         { x = 0
         , y = 0
-        , bearing = E
+        , bearing = East
         }
 
 
@@ -75,16 +75,16 @@ goForward count ship =
 doMove : Direction -> Int -> Ship -> Ship
 doMove dir count ship =
     case dir of
-        N ->
+        North ->
             { ship | y = ship.y - count }
 
-        S ->
+        South ->
             { ship | y = ship.y + count }
 
-        W ->
+        West ->
             { ship | x = ship.x - count }
 
-        E ->
+        East ->
             { ship | x = ship.x + count }
 
 
@@ -106,17 +106,17 @@ doTurn turn inputCount ship =
             { ship
                 | bearing =
                     case ship.bearing of
-                        N ->
-                            E
+                        North ->
+                            East
 
-                        E ->
-                            S
+                        East ->
+                            South
 
-                        S ->
-                            W
+                        South ->
+                            West
 
-                        W ->
-                            N
+                        West ->
+                            North
             }
 
 
@@ -154,16 +154,16 @@ orientationParser =
             (\c ->
                 case c of
                     'N' ->
-                        P.succeed <| Absolute N
+                        P.succeed <| Absolute North
 
                     'S' ->
-                        P.succeed <| Absolute S
+                        P.succeed <| Absolute South
 
                     'E' ->
-                        P.succeed <| Absolute E
+                        P.succeed <| Absolute East
 
                     'W' ->
-                        P.succeed <| Absolute W
+                        P.succeed <| Absolute West
 
                     'L' ->
                         P.succeed <| (flip (//) 90 >> Turn Left)
