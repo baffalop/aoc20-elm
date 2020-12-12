@@ -21,20 +21,67 @@ solve1 =
     parse >> untilStable advanceByNeighbours >> countOccupied
 
 
+solve2 : String -> Int
+solve2 =
+    parse >> untilStable advanceBySightlines >> countOccupied
+
+
 countOccupied : Seating -> Int
 countOccupied =
     Matrix.toArray >> Array.filter occupied >> Array.length
 
 
+advanceBySightlines : Seating -> Seating
+advanceBySightlines =
+    advanceBy
+        (visible |> mustBe ((==) 0))
+        (visible |> mustBe (flip (>=) 5))
+
+
 advanceByNeighbours : Seating -> Seating
 advanceByNeighbours =
     advanceBy
-        (countNeighbours |> mustBe ((==) 0))
-        (countNeighbours |> mustBe (flip (>=) 4))
+        (neighbours |> mustBe ((==) 0))
+        (neighbours |> mustBe (flip (>=) 4))
 
 
-countNeighbours : Int -> Int -> Seating -> Int
-countNeighbours x y =
+visible : Int -> Int -> Seating -> Int
+visible x y seating =
+    [ ( -1, -1 )
+    , ( -1, 0 )
+    , ( -1, 1 )
+    , ( 0, -1 )
+    , ( 0, 1 )
+    , ( 1, -1 )
+    , ( 1, 0 )
+    , ( 1, 1 )
+    ]
+        |> List.filter (seeOccupiedAlong x y seating)
+        |> List.length
+
+
+seeOccupiedAlong : Int -> Int -> Seating -> ( Int, Int ) -> Bool
+seeOccupiedAlong x y seating (( along, down ) as slope) =
+    let
+        nextX =
+            x + along
+
+        nextY =
+            y + down
+    in
+    case Matrix.get nextX nextY seating of
+        Ok Person ->
+            True
+
+        Ok Floor ->
+            seeOccupiedAlong nextX nextY seating slope
+
+        _ ->
+            False
+
+
+neighbours : Int -> Int -> Seating -> Int
+neighbours x y =
     Neighbours.neighbours Neighbours.Plane x y
         >> Array.filter occupied
         >> Array.length
