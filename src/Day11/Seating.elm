@@ -1,4 +1,13 @@
-module Day11.Seating exposing (..)
+module Day11.Seating exposing
+    ( Seating
+    , Tile(..)
+    , advanceByNeighbours
+    , advanceBySightlines
+    , parse
+    , puzzleInput
+    , solve1
+    , solve2
+    )
 
 import Array exposing (Array)
 import Basics.Extra exposing (flip)
