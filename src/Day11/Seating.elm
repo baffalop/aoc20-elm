@@ -18,7 +18,7 @@ type Tile
 
 solve1 : String -> Int
 solve1 =
-    parse >> advanceUntilStabilised >> countOccupied
+    parse >> untilStable advanceByNeighbours >> countOccupied
 
 
 countOccupied : Seating -> Int
@@ -26,40 +26,11 @@ countOccupied =
     Matrix.toArray >> Array.filter occupied >> Array.length
 
 
-advanceUntilStabilised : Seating -> Seating
-advanceUntilStabilised current =
-    let
-        next =
-            advance current
-    in
-    if current == next then
-        current
-
-    else
-        advanceUntilStabilised next
-
-
-advance : Seating -> Seating
-advance seating =
-    flip Matrix.indexedMap seating <|
-        \x y tile ->
-            case tile of
-                Floor ->
-                    Floor
-
-                Seat ->
-                    if countNeighbours x y seating == 0 then
-                        Person
-
-                    else
-                        Seat
-
-                Person ->
-                    if countNeighbours x y seating >= 4 then
-                        Seat
-
-                    else
-                        Person
+advanceByNeighbours : Seating -> Seating
+advanceByNeighbours =
+    advanceBy
+        (countNeighbours |> mustBe ((==) 0))
+        (countNeighbours |> mustBe (flip (>=) 4))
 
 
 countNeighbours : Int -> Int -> Seating -> Int
@@ -67,6 +38,51 @@ countNeighbours x y =
     Neighbours.neighbours Neighbours.Plane x y
         >> Array.filter occupied
         >> Array.length
+
+
+mustBe : (Int -> Bool) -> (Int -> Int -> Seating -> Int) -> Int -> Int -> Seating -> Bool
+mustBe predicate count x y s =
+    count x y s |> predicate
+
+
+type alias Rule =
+    Int -> Int -> Seating -> Bool
+
+
+advanceBy : Rule -> Rule -> Seating -> Seating
+advanceBy flipEmpty flipOccupied seating =
+    flip Matrix.indexedMap seating <|
+        \x y tile ->
+            case tile of
+                Floor ->
+                    Floor
+
+                Seat ->
+                    if flipEmpty x y seating then
+                        Person
+
+                    else
+                        Seat
+
+                Person ->
+                    if flipOccupied x y seating then
+                        Seat
+
+                    else
+                        Person
+
+
+untilStable : (Seating -> Seating) -> Seating -> Seating
+untilStable adv current =
+    let
+        next =
+            adv current
+    in
+    if current == next then
+        current
+
+    else
+        untilStable adv next
 
 
 occupied : Tile -> Bool
