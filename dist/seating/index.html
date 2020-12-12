@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Day11.Animation</title>
+  <title>Day11.Visualisation</title>
   <style>body { padding: 0; margin: 0; }</style>
 </head>
 
@@ -5241,8 +5241,8 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$document = _Browser_document;
-var $author$project$Day11$Animation$Neighbours = {$: 'Neighbours'};
-var $author$project$Day11$Animation$NotStarted = {$: 'NotStarted'};
+var $author$project$Day11$Visualisation$Neighbours = {$: 'Neighbours'};
+var $author$project$Day11$Visualisation$NotStarted = {$: 'NotStarted'};
 var $author$project$Day11$Seating$Floor = {$: 'Floor'};
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
@@ -5459,22 +5459,22 @@ var $author$project$Day11$Seating$parse = A2(
 	$author$project$Day11$Seating$read2d($author$project$Day11$Seating$readTile),
 	$author$project$Day11$Seating$toMatrix($author$project$Day11$Seating$Floor));
 var $author$project$Day11$Seating$puzzleInput = 'LLLLL.LLLLLLL.LLLLLL.L.LLLL..LLLL.LLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLL.L.LLLLLLLLLLLLLL.LLLLLL\nLLLLLLLLLLLLLLL.LLLL..LLLLLLLLLLLL.LLLLLLLL.L..LLLLLLLLLLLL.LLLL.LLL.LLLLL.LLL.LLLLLLLLLLL\nLLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLL.LLL.LLLLLLLL.LLLLL.LL.LLLLL.LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLL.LLL.LLLLLLLL.LLLLLL\nLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLLL.LLLLLLLLLLLLL.LLLLLL\nLLLLLLLLLLLLLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLL.L.LLLLLL.LLLLLL..LLLLLL..LLLLLLLLLLLLLL.LLLLLL\n.L..L.L.L.LL..LL.........L....L.L..LL.LLLL.L..L.LLLL.L.L..L.......LL...LL..LL.L..L.L.LL..L\nLLL.L.LLL.LLLLL..LLL.LLLLLL.LL.L.L.LLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLLLLL..LLLLL\nLL.L..LLLLLLLLLLLLLL.LLLLLL.LLLLLL.LLLLLLLLLLLLLLLLL.LLLLLL.LLLL.LLLLLLLLL.LLLLLLLLLLLLLLL\nLLL.LLL.LLLL.LL.LLLL.LLLLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLL.LLLLLLL.LLLLLLLLLLLLL\nLLLLLLLLL.LLLLL.LLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLL.LL.LLL\nLLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLL.LL.LLLLLL..LLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLL..LLLLLLL.LLL.LL.LLLLLLL.LLLLLL\nLLLLL.LLLLLLLLLLLLL.LLLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLL.LL.LLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLL.LLLLLLLLL..LLLLLLLL.LLLLLL.L.LLLLLLLLLLLL.LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLL.LLLLLLLL.LLL.LLLLL.LLLLLLLL.LLL.LLLL.LLLLLL.LLLLLL.LLLLLLL.LLLLL.LLLLLLLLL\n...L..L..........L...L..LLL..L....LL......L......L.L.L...........L....L.L.LL..LL.L....LL..\nLLLLL.LLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLL.LLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\nLLLLL.LLLLL.LLLLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLL.LLLLLLLLLLL..LLLLL..LLLLLLL.LLLLLLLL..LLLLL.LLLLLLLL.LLLLLLLLLLL.LL.LLLLLL\nLLLLL.LL.LLL.LL..LLLL.LLLLL.LL.LL..LLL.LLLL.LLLLLLL..LLLLLLLL.LLLLLL.LLLL..LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLL.L.LLLLLLLL..LLLLLLLLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLLLLLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLLL.LLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLL..LLLLLLLL.LLLLLL\nLLLLLLLLLLL.LLL.LLLL.LLLLLL.L.LLLLLLLLLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLLL\nLL...L.LLL.....L....LL.....L...L.L....L.L.....L.LL...L..L.....L.L..LLL.L.LL.LLLL..........\nLLLLL.LLLLLLLLL.LLLL.LLLLL.LLLLLLLLLLL.LLL..LLLL.LLL.LLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLL..LLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLL.LLLLL..LLLLLLL.LLLLLL\nLLLLLLLLLLLLLLL.LLL..LLLLLL.LLLLL.LL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLLLL.LLLLLL\nLLLLL.LLL.LLLLL.LLLLLLLLLLLLLLLLLL.LLLLLLL..LLLLL.LLLLLLLLL.LLLLLLLL.LLLLL..LL.LLLL.LLLLLL\nL..LL.L.....L...LL.....L.L........L..LL...L.....L....L..L.L...L...LL.......L.L....L.......\nLLLLL..LLLLLLLL.LLLL.LLLLLL.LLLLLLLL.LLLL.LLLLLLL.LLLLLLLLLLLLLLLLLL..LLLL.LLLLLLLL.LLLLLL\nLLLLLLLLLLLLLLL.LLLL.LLLLLL.LLLLLLLLLLLLLLL.LLLL.LLL.LLLL.L.LLLLLLLLLLLLLLLLL.L.LLL.LLLLLL\nLLLLL.LLLLLLLLL.LL.LLLLLLLLLLLLLLL.LLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL..LLLLL\nLLLLLLLLLLLLLLL.LLL..LL.LLLLLLLLLLLLLLLLLLL.LLL.LLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLL.\nLLLLL.LLLLLLLLL.LLLLLLLLLLLLL.LLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLLLLL.L.LLLLLL.LLLLLLLLLLLLLLL.LL.LLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLL\nLLLLLLLLLLLLLLL..LLL.LLLLLL.LLLLLLLLL.LLLLLLLLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLLLLLLLLLLLL\nLLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLL.LL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLL.LL\n.L.LLLLL.............L.LL.L.LLL.L.LL....L...L...L.....L..L...LLLL..L..L.......L.L.LLL.LLLL\nLLLLL.LLLLLLLLLLLLLLLLLLLLL..LLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLLL.LLLLLLLLLLLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLL.LLL.LL.LLLLL.LLLLL.LLLLLL.LLLLLLLL\nLLLLLLLLLL.LLL.LLLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLLL.LLLLLLLLLL.LLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLLLLLL.LLLL.LLLLLLLLLLLLLLL.LLLLLLLL.LLLL..LLLLL.LLLLLLLLL\nLLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLLLLLLL..LLLLLL.LLLLLLLL.LLLLL.LLLLLLLL.LLLLLL\nLLLL..LLLLLLLLL..LLL.LLLLLL.L.LLLLLL.LLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.L..LL.LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLLLLLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLL..LLLLLLLLLLLLLLL.LLLLL.LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLL.LLLLLLLLLLL.LLL.LLLLLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLL..LLLLLL\nLLLLL.LLLLL.LLL..LLL.LLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLL.LLL.LL\n.L.......LL...L...L.LL.LL......L..L...L...L...L....LL..L...L..LLL.....L.....L.....LLL.LL..\nLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLL.LLLLL..LLLLL.LL.LLLLL.LLLLLLL..L.LLLL\nLLLLL.LLLLLLLLLLLLLLLLLLLLL.L.LLLLLLLLLLL.L.LLL.LLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLL\nLLLLL.LLLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLL.LLLLLL.LLLLL.LLLLLLLL.LLLLLLLLLLLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLL.L.LLLLL.LL.LLLLL.LLLLLL\nLLLL..LLLLLLLLL.LLLLLLLLLLL.LL.LLL.LLLLLLLL.LLLLLLLLLLLL.LL.LLLLLLLL.LLLLL.LLLLLLLL.LLLLLL\n.......L......L....L....L......L...L.L..L...L.LL.....L......L.......LL.........L.L.L...LLL\nL.LLL.LLLLLLLLL.LLLL.LLLLL..LLLLLL.LLLLLLLLLLLLLL.LL.LLLLLL.LLLLLL.L.LLLLL.LLLLL.LLL.LLLLL\nLLLLL.LLLLLLLLLLL.LL.LLLLLL..LLLL..LLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLLLLLLLLLLLL\nLLLLLLLLLLLLLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLL.LLL.LLLLLLLLLL.LLLLLL\nLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLL.LLLL.LLL.LLLL.LLL.L..LLL.LLL.LLLL.LLLLLLL.LLLLLLLLLLLLL\nLLLL.LLLLLLLLLL.L.LL.LLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLL.LLLLL.LLLLL.LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLL.LLLLLL.LLL..LLLLLL.LLLLLLLLLLLLLLLLL.LLLLLLLLLLL.LLL.LLLLLLLLLLLLLL.LLLLLL\n.LLLLLLLLLLLLLL.LLLLLLLLLLLLL.LLLL.LLLLLLLL.L.LLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLL.LLL..LLLLLL\nLLLLLLLLLLLLLLL.LLLL.LLLLLLLLLLLLLL.LLLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\nL...L.........L....L......LL..LL.....LL.L..LLL....L.L...L..LLL.......LL.L...L..L...LL...L.\nLLLLL.LLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLL.LLLLLLLLLL.LLLLLLLLL.LLLLL\nLLLLL.L.LLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLL.LLLLL..LL.LLLLLLLLLLL\nLLLLLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLLLLLLLLLL.LLLLLLLL.L.LLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLLLLLLLL.LLLLLLLL.LL.LLL\nLLLLL.LLLLLLLLLLLLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLLLLL..LLLLL\n.L.L.L..L.L...LLLLLL.....LL...L..L..L......LLLL.L.LL.....LLLL.LL.L.....L.L...L....L...L...\nLLLL..LLLLLL.LL.LLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLL.LLLLLLLLL\nLLLLL.LLLLLLLLL.LLLLLLLLLLL..LLLLL.L.L.LLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLLLLL.LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLL.LLLLLLLLLL.LLLLLL.LLL.LLLLLLLLLLLLLL.LLLL..LLLLL\nLLLLLL.LLLLLL.LLLLLLLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LL.LL..LLLLLLL.LLLLLL\nLLLLL.LLLL..LLLLL.LL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLL.LLLL.LLL.LLLLLL\n....L........L..L...........L.L............L.....LL..L.L.L.........LLLLLL.LL..L..L.L..L...\nLL.LLLLLLLLLLLL.LLLLLLLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLL.L..LLLL..LLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLLLLLLL.L.LLLLLLLL.LLLLLLLL.LLL.LL.LLLLLLLL..LLLL.LLLL.LLLLLLLLLL\nLLLL.LLLLLLLLLL.LLLL.LLLLLL.LLLLLLLLLLLLL.L.LLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLL\nLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLL.LLL.LLLLLLLL.LLLLLLLLLLL.LLL.LLLLL.LLLLLLL..LLLLLL\nLLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLLL..LL.LLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLLLLLLL.LLLLLL.LLLLLL..LLLLLLL.LLLLL.LL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLL\nLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL...LLLLLL.LLLL.L.LLLLL.LL.LLLLL.LLLLLLLL.L.LLLL\nLLLLLLLLLLLLLLL.LLLL.L.LLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLL.L.LLLLLL.LLLLLL\nL.LLL......LLL....L.......L..L..L.....LL......L.LLLL...L.....L.L............L.LL....LL....\nLLLLLLLLLLLLLLL.LLLLLLLLLLL.LLL.LL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLL.LLLLLLLL.LLLLLL\nL..LL.LLLLLLLLL.LLLLLLLLLLLLLLLLLL.LLLLL.LLLL.LLLLLL.LLLLLLLLLLLLLLL.LLLLLLL.LLLLLL.LLLLLL\nLLLLL.LLLLLLLLL.LLLLLLLLLLL.LLLLL..LL.LLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLL.LLLL.LLLLLL\nLLLLL.LL.LLLLLL.LLLL.LLLLLL.LL.LLL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLL\nLLLLLLLLLLLLLLL.LLLLLLL..LL.LLLL.L.LLLLLLLL.L.LLLLL..LLLLLL.LLLLLLL..LLLLLLLLLLLLLL.LLLLLL\nLLL...LLLLLLLLL.LLLL.LLLLL..LLLLLLL.LLLLLLL...LLLLLLLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLL.LLL.LL\nLLLLLLLLLLLLLLL.LLLL.LLLLLL.LLLL.LLLLLLLLLL.LLLLLLL.LLL.LLLLLLLLLL.L.LLLLLLLLLLLLLL.L.LLLL\n...L.L.L.L.....LL...L...LL.L........L...LL.L...........L..L.L.L.L..L...LL.LL.L.L.L....L..L\nLLL.L.LLLLLLLLL.LLLL.L.LLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLL..LLLL.LLLLL.LL.LLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLL.LLL.LLLLLLLLLL.LLLLLLLLLLLLLLL\nLLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLL..LLLLLLLL.LLLLLL\nLLLLL.LLLLLLLLLLLLLL.L.LLLL.LLLL.L.LLLLLLLL.LLLLLLLL.LLL.LL.LLLLLLLL.LLLLL.LLLLLLLL.LLLLLL\nLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLLLL.LLLLLLL.LLLLL.LLLLLLLL.LLLLLL';
-var $author$project$Day11$Animation$initialSeating = $author$project$Day11$Seating$parse($author$project$Day11$Seating$puzzleInput);
+var $author$project$Day11$Visualisation$initialSeating = $author$project$Day11$Seating$parse($author$project$Day11$Seating$puzzleInput);
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Day11$Animation$withCmd = F2(
+var $author$project$Day11$Visualisation$withCmd = F2(
 	function (cmd, model) {
 		return _Utils_Tuple2(model, cmd);
 	});
-var $author$project$Day11$Animation$withNoCmd = $author$project$Day11$Animation$withCmd($elm$core$Platform$Cmd$none);
-var $author$project$Day11$Animation$init = $author$project$Day11$Animation$withNoCmd(
-	{mode: $author$project$Day11$Animation$Neighbours, seating: $author$project$Day11$Animation$initialSeating, state: $author$project$Day11$Animation$NotStarted});
+var $author$project$Day11$Visualisation$withNoCmd = $author$project$Day11$Visualisation$withCmd($elm$core$Platform$Cmd$none);
+var $author$project$Day11$Visualisation$init = $author$project$Day11$Visualisation$withNoCmd(
+	{mode: $author$project$Day11$Visualisation$Neighbours, seating: $author$project$Day11$Visualisation$initialSeating, state: $author$project$Day11$Visualisation$NotStarted});
 var $elm$core$List$singleton = function (value) {
 	return _List_fromArray(
 		[value]);
 };
-var $author$project$Day11$Animation$Playing = {$: 'Playing'};
-var $author$project$Day11$Animation$Tick = {$: 'Tick'};
+var $author$project$Day11$Visualisation$Playing = {$: 'Playing'};
+var $author$project$Day11$Visualisation$Tick = {$: 'Tick'};
 var $elm$core$Basics$always = F2(
 	function (a, _v0) {
 		return a;
@@ -5896,15 +5896,15 @@ var $elm$time$Time$every = F2(
 	});
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Day11$Animation$subscriptions = function (_v0) {
+var $author$project$Day11$Visualisation$subscriptions = function (_v0) {
 	var state = _v0.state;
-	return _Utils_eq(state, $author$project$Day11$Animation$Playing) ? A2(
+	return _Utils_eq(state, $author$project$Day11$Visualisation$Playing) ? A2(
 		$elm$time$Time$every,
 		200,
-		$elm$core$Basics$always($author$project$Day11$Animation$Tick)) : $elm$core$Platform$Sub$none;
+		$elm$core$Basics$always($author$project$Day11$Visualisation$Tick)) : $elm$core$Platform$Sub$none;
 };
-var $author$project$Day11$Animation$Done = {$: 'Done'};
-var $author$project$Day11$Animation$Paused = {$: 'Paused'};
+var $author$project$Day11$Visualisation$Done = {$: 'Done'};
+var $author$project$Day11$Visualisation$Paused = {$: 'Paused'};
 var $author$project$Day11$Seating$Person = {$: 'Person'};
 var $elm_community$basics_extra$Basics$Extra$flip = F3(
 	function (f, b, a) {
@@ -6717,30 +6717,30 @@ var $author$project$Day11$Seating$advanceBySightlines = A2(
 		A2($elm_community$basics_extra$Basics$Extra$flip, $elm$core$Basics$ge, 5),
 		$author$project$Day11$Seating$visible));
 var $elm$core$Basics$neq = _Utils_notEqual;
-var $author$project$Day11$Animation$update = F2(
+var $author$project$Day11$Visualisation$update = F2(
 	function (msg, model) {
-		var noOp = $author$project$Day11$Animation$withNoCmd(model);
+		var noOp = $author$project$Day11$Visualisation$withNoCmd(model);
 		switch (msg.$) {
 			case 'StartWith':
 				var mode = msg.a;
-				return $author$project$Day11$Animation$withNoCmd(
+				return $author$project$Day11$Visualisation$withNoCmd(
 					_Utils_update(
 						model,
-						{mode: mode, state: $author$project$Day11$Animation$Playing}));
+						{mode: mode, state: $author$project$Day11$Visualisation$Playing}));
 			case 'Pause':
-				return $author$project$Day11$Animation$withNoCmd(
+				return $author$project$Day11$Visualisation$withNoCmd(
 					_Utils_update(
 						model,
-						{state: $author$project$Day11$Animation$Paused}));
+						{state: $author$project$Day11$Visualisation$Paused}));
 			case 'Play':
-				return $author$project$Day11$Animation$withNoCmd(
+				return $author$project$Day11$Visualisation$withNoCmd(
 					_Utils_update(
 						model,
-						{state: $author$project$Day11$Animation$Playing}));
+						{state: $author$project$Day11$Visualisation$Playing}));
 			case 'Reset':
-				return $author$project$Day11$Animation$init;
+				return $author$project$Day11$Visualisation$init;
 			default:
-				if (!_Utils_eq(model.state, $author$project$Day11$Animation$Playing)) {
+				if (!_Utils_eq(model.state, $author$project$Day11$Visualisation$Playing)) {
 					return noOp;
 				} else {
 					var advance = function () {
@@ -6752,12 +6752,12 @@ var $author$project$Day11$Animation$update = F2(
 						}
 					}();
 					var next = advance(model.seating);
-					return $author$project$Day11$Animation$withNoCmd(
+					return $author$project$Day11$Visualisation$withNoCmd(
 						_Utils_update(
 							model,
 							{
 								seating: next,
-								state: _Utils_eq(next, model.seating) ? $author$project$Day11$Animation$Done : $author$project$Day11$Animation$Playing
+								state: _Utils_eq(next, model.seating) ? $author$project$Day11$Visualisation$Done : $author$project$Day11$Visualisation$Playing
 							}));
 				}
 		}
@@ -12512,7 +12512,7 @@ var $mdgriffith$elm_ui$Element$layout = $mdgriffith$elm_ui$Element$layoutWith(
 var $mdgriffith$elm_ui$Element$fromRgb255 = function (clr) {
 	return A4($mdgriffith$elm_ui$Internal$Model$Rgba, clr.red / 255, clr.green / 255, clr.blue / 255, clr.alpha);
 };
-var $author$project$Day11$Animation$rgb = F3(
+var $author$project$Day11$Visualisation$rgb = F3(
 	function (r, g, b) {
 		return $mdgriffith$elm_ui$Element$fromRgb255(
 			{alpha: 1, blue: b, green: g, red: r});
@@ -12536,19 +12536,13 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 			x,
 			x));
 };
-var $author$project$Day11$Animation$Pause = {$: 'Pause'};
-var $author$project$Day11$Animation$Play = {$: 'Play'};
-var $author$project$Day11$Animation$Reset = {$: 'Reset'};
-var $author$project$Day11$Animation$Sightlines = {$: 'Sightlines'};
-var $author$project$Day11$Animation$StartWith = function (a) {
+var $author$project$Day11$Visualisation$Pause = {$: 'Pause'};
+var $author$project$Day11$Visualisation$Play = {$: 'Play'};
+var $author$project$Day11$Visualisation$Reset = {$: 'Reset'};
+var $author$project$Day11$Visualisation$Sightlines = {$: 'Sightlines'};
+var $author$project$Day11$Visualisation$StartWith = function (a) {
 	return {$: 'StartWith', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Model$Class = F2(
-	function (a, b) {
-		return {$: 'Class', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
-var $mdgriffith$elm_ui$Element$Font$bold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.bold);
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
 var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
 	return {$: 'Describe', a: a};
@@ -12633,6 +12627,10 @@ var $mdgriffith$elm_ui$Element$Input$onKeyLookup = function (lookup) {
 				},
 				isKey)));
 };
+var $mdgriffith$elm_ui$Internal$Model$Class = F2(
+	function (a, b) {
+		return {$: 'Class', a: a, b: b};
+	});
 var $mdgriffith$elm_ui$Internal$Flag$cursor = $mdgriffith$elm_ui$Internal$Flag$flag(21);
 var $mdgriffith$elm_ui$Element$pointer = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$cursor, $mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
 var $mdgriffith$elm_ui$Element$Input$space = ' ';
@@ -12897,7 +12895,7 @@ var $mdgriffith$elm_ui$Element$text = function (content) {
 	return $mdgriffith$elm_ui$Internal$Model$Text(content);
 };
 var $mdgriffith$elm_ui$Element$Font$typeface = $mdgriffith$elm_ui$Internal$Model$Typeface;
-var $author$project$Day11$Animation$button = F2(
+var $author$project$Day11$Visualisation$button = F2(
 	function (label, onPress) {
 		return A2(
 			$mdgriffith$elm_ui$Element$Input$button,
@@ -12905,19 +12903,18 @@ var $author$project$Day11$Animation$button = F2(
 				[
 					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
 					$mdgriffith$elm_ui$Element$Font$size(18),
-					$mdgriffith$elm_ui$Element$Font$bold,
-					$mdgriffith$elm_ui$Element$padding(6),
+					$mdgriffith$elm_ui$Element$padding(10),
 					$mdgriffith$elm_ui$Element$Border$rounded(4),
 					$mdgriffith$elm_ui$Element$Background$color(
-					A3($author$project$Day11$Animation$rgb, 33, 75, 109)),
+					A3($author$project$Day11$Visualisation$rgb, 33, 75, 109)),
 					$mdgriffith$elm_ui$Element$mouseOver(
 					_List_fromArray(
 						[
 							$mdgriffith$elm_ui$Element$Background$color(
-							A3($author$project$Day11$Animation$rgb, 45, 96, 138))
+							A3($author$project$Day11$Visualisation$rgb, 45, 96, 138))
 						])),
 					$mdgriffith$elm_ui$Element$Font$color(
-					A3($author$project$Day11$Animation$rgb, 255, 255, 255)),
+					A3($author$project$Day11$Visualisation$rgb, 225, 240, 255)),
 					$mdgriffith$elm_ui$Element$Font$family(
 					_List_fromArray(
 						[
@@ -12950,7 +12947,7 @@ var $mdgriffith$elm_ui$Element$row = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var $author$project$Day11$Animation$viewButtons = function (state) {
+var $author$project$Day11$Visualisation$viewButtons = function (state) {
 	return A2(
 		$mdgriffith$elm_ui$Element$row,
 		_List_fromArray(
@@ -12964,28 +12961,28 @@ var $author$project$Day11$Animation$viewButtons = function (state) {
 					return _List_fromArray(
 						[
 							A2(
-							$author$project$Day11$Animation$button,
+							$author$project$Day11$Visualisation$button,
 							'Start Part 1',
-							$author$project$Day11$Animation$StartWith($author$project$Day11$Animation$Neighbours)),
+							$author$project$Day11$Visualisation$StartWith($author$project$Day11$Visualisation$Neighbours)),
 							A2(
-							$author$project$Day11$Animation$button,
+							$author$project$Day11$Visualisation$button,
 							'Start Part 2',
-							$author$project$Day11$Animation$StartWith($author$project$Day11$Animation$Sightlines))
+							$author$project$Day11$Visualisation$StartWith($author$project$Day11$Visualisation$Sightlines))
 						]);
 				case 'Playing':
 					return _List_fromArray(
 						[
-							A2($author$project$Day11$Animation$button, 'Pause', $author$project$Day11$Animation$Pause)
+							A2($author$project$Day11$Visualisation$button, 'Pause', $author$project$Day11$Visualisation$Pause)
 						]);
 				case 'Paused':
 					return _List_fromArray(
 						[
-							A2($author$project$Day11$Animation$button, 'Play', $author$project$Day11$Animation$Play)
+							A2($author$project$Day11$Visualisation$button, 'Play', $author$project$Day11$Visualisation$Play)
 						]);
 				default:
 					return _List_fromArray(
 						[
-							A2($author$project$Day11$Animation$button, 'Reset', $author$project$Day11$Animation$Reset)
+							A2($author$project$Day11$Visualisation$button, 'Reset', $author$project$Day11$Visualisation$Reset)
 						]);
 			}
 		}());
@@ -13029,7 +13026,7 @@ var $elm$core$Array$foldl = F3(
 			A3($elm$core$Elm$JsArray$foldl, helper, baseCase, tree),
 			tail);
 	});
-var $author$project$Day11$Animation$printTile = function (tile) {
+var $author$project$Day11$Visualisation$printTile = function (tile) {
 	switch (tile.$) {
 		case 'Floor':
 			return '▪️';
@@ -13039,9 +13036,9 @@ var $author$project$Day11$Animation$printTile = function (tile) {
 			return '\u200D🙎';
 	}
 };
-var $author$project$Day11$Animation$printRow = A2(
+var $author$project$Day11$Visualisation$printRow = A2(
 	$elm$core$Array$foldl,
-	A2($elm$core$Basics$composeR, $author$project$Day11$Animation$printTile, $elm$core$Basics$append),
+	A2($elm$core$Basics$composeR, $author$project$Day11$Visualisation$printTile, $elm$core$Basics$append),
 	'');
 var $elm$core$Result$toMaybe = function (result) {
 	if (result.$ === 'Ok') {
@@ -13051,7 +13048,7 @@ var $elm$core$Result$toMaybe = function (result) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Day11$Animation$printSeating = function (seating) {
+var $author$project$Day11$Visualisation$printSeating = function (seating) {
 	return A2(
 		$elm$core$String$join,
 		'\n',
@@ -13063,29 +13060,29 @@ var $author$project$Day11$Animation$printSeating = function (seating) {
 				A2(
 					$elm$core$Basics$composeR,
 					$elm$core$Result$toMaybe,
-					$elm$core$Maybe$map($author$project$Day11$Animation$printRow))),
+					$elm$core$Maybe$map($author$project$Day11$Visualisation$printRow))),
 			A2(
 				$elm$core$List$range,
 				0,
 				$Kraxorax$elm_matrix_a$Matrix$height(seating) - 1)));
 };
-var $author$project$Day11$Animation$viewSeating = function (seating) {
+var $author$project$Day11$Visualisation$viewSeating = function (seating) {
 	return A2(
 		$mdgriffith$elm_ui$Element$el,
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$padding(10),
 				$mdgriffith$elm_ui$Element$Background$color(
-				A3($author$project$Day11$Animation$rgb, 35, 34, 49)),
+				A3($author$project$Day11$Visualisation$rgb, 35, 34, 49)),
 				$mdgriffith$elm_ui$Element$Font$size(8),
 				$mdgriffith$elm_ui$Element$Font$family(
 				_List_fromArray(
 					[$mdgriffith$elm_ui$Element$Font$monospace]))
 			]),
 		$mdgriffith$elm_ui$Element$text(
-			$author$project$Day11$Animation$printSeating(seating)));
+			$author$project$Day11$Visualisation$printSeating(seating)));
 };
-var $author$project$Day11$Animation$view = function (_v0) {
+var $author$project$Day11$Visualisation$view = function (_v0) {
 	var seating = _v0.seating;
 	var mode = _v0.mode;
 	var state = _v0.state;
@@ -13096,7 +13093,7 @@ var $author$project$Day11$Animation$view = function (_v0) {
 				$mdgriffith$elm_ui$Element$centerX,
 				$mdgriffith$elm_ui$Element$centerY,
 				$mdgriffith$elm_ui$Element$Background$color(
-				A3($author$project$Day11$Animation$rgb, 15, 15, 35))
+				A3($author$project$Day11$Visualisation$rgb, 15, 15, 35))
 			]),
 		A2(
 			$mdgriffith$elm_ui$Element$column,
@@ -13106,33 +13103,33 @@ var $author$project$Day11$Animation$view = function (_v0) {
 					$mdgriffith$elm_ui$Element$centerY,
 					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
 					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-					$mdgriffith$elm_ui$Element$spacing(30)
+					$mdgriffith$elm_ui$Element$spacing(23)
 				]),
 			_List_fromArray(
 				[
-					$author$project$Day11$Animation$viewButtons(state),
-					$author$project$Day11$Animation$viewSeating(seating)
+					$author$project$Day11$Visualisation$viewButtons(state),
+					$author$project$Day11$Visualisation$viewSeating(seating)
 				])));
 };
-var $author$project$Day11$Animation$main = $elm$browser$Browser$document(
+var $author$project$Day11$Visualisation$main = $elm$browser$Browser$document(
 	{
 		init: function (_v0) {
-			return $author$project$Day11$Animation$init;
+			return $author$project$Day11$Visualisation$init;
 		},
-		subscriptions: $author$project$Day11$Animation$subscriptions,
-		update: $author$project$Day11$Animation$update,
+		subscriptions: $author$project$Day11$Visualisation$subscriptions,
+		update: $author$project$Day11$Visualisation$update,
 		view: function (model) {
 			return {
 				body: $elm$core$List$singleton(
-					$author$project$Day11$Animation$view(model)),
+					$author$project$Day11$Visualisation$view(model)),
 				title: 'Seating System'
 			};
 		}
 	});
-_Platform_export({'Day11':{'Animation':{'init':$author$project$Day11$Animation$main(
+_Platform_export({'Day11':{'Visualisation':{'init':$author$project$Day11$Visualisation$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}}});}(this));
 
-  var app = Elm.Day11.Animation.init({ node: document.getElementById("elm") });
+  var app = Elm.Day11.Visualisation.init({ node: document.getElementById("elm") });
 }
 catch (e)
 {

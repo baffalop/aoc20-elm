@@ -140,7 +140,7 @@ view { seating, mode, state } =
             , Element.centerY
             , Element.width Element.shrink
             , Element.height Element.shrink
-            , Element.spacing 30
+            , Element.spacing 23
             ]
             [ viewButtons state
             , viewSeating seating
@@ -212,14 +212,13 @@ button label onPress =
     Element.Input.button
         [ Element.width Element.shrink
         , Element.Font.size 18
-        , Element.Font.bold
-        , Element.padding 6
+        , Element.padding 10
         , Element.Border.rounded 4
         , Element.Background.color <| rgb 33 75 109
         , Element.mouseOver
             [ Element.Background.color <| rgb 45 96 138
             ]
-        , Element.Font.color <| rgb 255 255 255
+        , Element.Font.color <| rgb 225 240 255
         , Element.Font.family [ Element.Font.typeface "Helvetica", Element.Font.sansSerif ]
         ]
         { onPress = Just onPress
