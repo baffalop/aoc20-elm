@@ -1,4 +1,4 @@
-module Day12.Navigation exposing (puzzleInput, solve1)
+module Day12.Navigation exposing (puzzleInput, solve1, solve2)
 
 import Basics.Extra exposing (flip)
 import Parser as P exposing ((|.), (|=), Parser)
@@ -6,18 +6,33 @@ import Parser as P exposing ((|.), (|=), Parser)
 
 solve1 : String -> Int
 solve1 =
-    parse >> follow >> manhattanDistance
+    parse >> navigateShip >> manhattanDistance
 
 
-type alias Ship =
-    { x : Int
-    , y : Int
-    , bearing : Direction
+solve2 : String -> Int
+solve2 =
+    parse >> navigate >> .ship >> manhattanDistance
+
+
+type alias Position a =
+    { a
+        | x : Int
+        , y : Int
     }
 
 
-type alias Coord =
-    ( Int, Int )
+type alias Ship =
+    Position { bearing : Direction }
+
+
+type alias Vessel =
+    Position {}
+
+
+type alias Navigation =
+    { ship : Vessel
+    , waypoint : Vessel
+    }
 
 
 type Instruction
@@ -38,24 +53,84 @@ type Turn
     | Right
 
 
-manhattanDistance : Ship -> Int
+manhattanDistance : Position a -> Int
 manhattanDistance =
     fork .x .y
         >> Tuple.mapBoth abs abs
         >> apply (+)
 
 
-follow : List Instruction -> Ship
-follow =
-    List.foldl do
+navigateShip : List Instruction -> Ship
+navigateShip =
+    List.foldl doForShip
         { x = 0
         , y = 0
         , bearing = East
         }
 
 
-do : Instruction -> Ship -> Ship
-do instruction =
+navigate : List Instruction -> Navigation
+navigate =
+    List.foldl do
+        { ship = vessel 0 0
+        , waypoint = vessel 10 -1
+        }
+
+
+vessel : Int -> Int -> Vessel
+vessel x y =
+    { x = x
+    , y = y
+    }
+
+
+do : Instruction -> Navigation -> Navigation
+do instruction ({ ship, waypoint } as nav) =
+    case instruction of
+        Absolute dir count ->
+            { nav | waypoint = doMove dir count waypoint }
+
+        Turn turn count ->
+            { nav | waypoint = rotate turn count waypoint }
+
+        Forward count ->
+            { nav
+                | ship =
+                    { ship
+                        | x = ship.x + (waypoint.x * count)
+                        , y = ship.y + (waypoint.y * count)
+                    }
+            }
+
+
+rotate : Turn -> Int -> Position a -> Position a
+rotate turn inputCount ({ x, y } as pos) =
+    let
+        count =
+            inputCount |> modBy 4
+    in
+    if count == 0 then
+        pos
+
+    else
+        let
+            mult =
+                case turn of
+                    Left ->
+                        -1
+
+                    Right ->
+                        1
+        in
+        { pos
+            | x = negate <| y * mult
+            , y = x * mult
+        }
+            |> rotate turn (count - 1)
+
+
+doForShip : Instruction -> Ship -> Ship
+doForShip instruction =
     case instruction of
         Absolute dir count ->
             doMove dir count
@@ -72,7 +147,7 @@ goForward count ship =
     doMove ship.bearing count ship
 
 
-doMove : Direction -> Int -> Ship -> Ship
+doMove : Direction -> Int -> Position a -> Position a
 doMove dir count ship =
     case dir of
         North ->
