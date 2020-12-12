@@ -22,7 +22,7 @@ type alias Coord =
 
 type Instruction
     = Absolute Direction Int
-    | Turn Int
+    | Turn Turn Int
     | Forward Int
 
 
@@ -31,6 +31,11 @@ type Direction
     | S
     | E
     | W
+
+
+type Turn
+    = Left
+    | Right
 
 
 manhattanDistance : Ship -> Int
@@ -55,8 +60,8 @@ do instruction =
         Absolute dir count ->
             doMove dir count
 
-        Turn count ->
-            doTurn count
+        Turn turn count ->
+            doTurn turn count
 
         Forward count ->
             goForward count
@@ -83,8 +88,8 @@ doMove dir count ship =
             { ship | x = ship.x + count }
 
 
-doTurn : Int -> Ship -> Ship
-doTurn inputCount ship =
+doTurn : Turn -> Int -> Ship -> Ship
+doTurn turn inputCount ship =
     let
         count =
             inputCount |> modBy 4
@@ -92,8 +97,12 @@ doTurn inputCount ship =
     if count == 0 then
         ship
 
+    else if turn == Left then
+        doTurn Right (count * 3) ship
+
     else
-        doTurn (count - 1)
+        doTurn turn
+            (count - 1)
             { ship
                 | bearing =
                     case ship.bearing of
@@ -156,11 +165,11 @@ orientationParser =
                     'W' ->
                         P.succeed <| Absolute W
 
-                    'R' ->
-                        P.succeed <| (flip (//) 90 >> Turn)
-
                     'L' ->
-                        P.succeed <| (flip (//) 90 >> (*) 3 >> modBy 4 >> Turn)
+                        P.succeed <| (flip (//) 90 >> Turn Left)
+
+                    'R' ->
+                        P.succeed <| (flip (//) 90 >> Turn Right)
 
                     'F' ->
                         P.succeed <| Forward
