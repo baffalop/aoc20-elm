@@ -66,7 +66,9 @@ type Msg
     | Play
     | Reset
     | Tick
-    | LaunchForm
+    | Edit
+    | Input String
+    | Submit
 
 
 subscriptions : Model -> Sub Msg
@@ -128,8 +130,25 @@ update msg model =
                 }
                     |> withNoCmd
 
-        LaunchForm ->
-            Debug.todo "form"
+        Edit ->
+            { model | state = Editing <| printSeating editTile model.seating }
+                |> withNoCmd
+
+        Input value ->
+            { model | state = Editing value }
+                |> withNoCmd
+
+        Submit ->
+            case model.state of
+                Editing value ->
+                    { model
+                        | state = NotStarted
+                        , seating = Seating.parse value
+                    }
+                        |> withNoCmd
+
+                _ ->
+                    noOp
 
 
 
@@ -152,32 +171,57 @@ view { seating, mode, state } =
             , Element.spacing 23
             ]
             [ viewButtons state
-            , case state of
+            , viewMain state seating
+            ]
+
+
+viewMain state seating =
+    Element.column
+        [ Element.width Element.shrink
+        , Element.height Element.shrink
+        , Element.spacing 12
+        ]
+        [ Element.el
+            [ Element.padding 10
+            , Element.Background.color <| rgb 35 34 49
+            , fontColor
+            , Element.Font.size 8
+            , Element.Font.family [ Element.Font.monospace ]
+            ]
+          <|
+            case state of
                 Editing value ->
                     viewInput value
 
                 _ ->
-                    Element.column
-                        [ Element.width Element.shrink
-                        , Element.height Element.shrink
-                        , Element.spacing 12
-                        ]
-                        [ viewSeating seating
-                        , Element.row
-                            [ Element.spacing 30
-                            ]
-                            [ linkButton [] "Enter your own data" LaunchForm
-                            , link [ Element.alignRight ]
-                                "Source"
-                                "https://github.com/baffalop/aoc20-elm/tree/master/src/Day11"
-                            ]
-                        ]
+                    printSeating uiTile seating |> Element.text
+        , Element.row [ Element.spacing 40 ]
+            [ Element.link linkStyles
+                { url = "https://github.com/baffalop/aoc20-elm/tree/master/src/Day11"
+                , label = Element.text "Source"
+                }
             ]
+        ]
 
 
-viewInput : String -> Element msg
+viewInput : String -> Element Msg
 viewInput value =
-    Debug.todo "input"
+    Element.Input.multiline
+        [ Element.Background.color <| rgb 35 34 49
+        , Element.width <| Element.px 980
+        , Element.height <| Element.px 720
+        , Element.Font.color <| rgb 188 192 78
+        , Element.Font.size 15
+        , Element.Border.width 3
+        , Element.Border.color <| rgb 52 45 70
+        , Element.focused [ Element.Border.color <| rgb 69 60 105 ]
+        ]
+        { onChange = Input
+        , text = value
+        , placeholder = Nothing
+        , label = Element.Input.labelHidden "Puzzle input"
+        , spellcheck = False
+        }
 
 
 viewButtons : State -> Element Msg
@@ -191,6 +235,7 @@ viewButtons state =
             NotStarted ->
                 [ button "Start Part 1" <| StartWith Neighbours
                 , button "Start Part 2" <| StartWith Sightlines
+                , button "Edit" Edit
                 ]
 
             Playing ->
@@ -207,7 +252,7 @@ viewButtons state =
                 [ button "Reset" Reset ]
 
             Editing _ ->
-                [ button "Submit" Reset ]
+                [ button "Submit" Submit ]
 
 
 button : String -> msg -> Element msg
@@ -239,14 +284,6 @@ linkButton attr text onPress =
         }
 
 
-link : List (Element.Attribute msg) -> String -> String -> Element msg
-link attr text url =
-    Element.link (linkStyles ++ attr)
-        { url = url
-        , label = Element.text text
-        }
-
-
 linkStyles =
     [ Element.Font.size 15
     , Element.Font.color <| rgb 168 193 218
@@ -260,32 +297,20 @@ linkStyles =
 -- SEATING
 
 
-viewSeating : Seating -> Element msg
-viewSeating seating =
-    printSeating seating
-        |> Element.text
-        |> Element.el
-            [ Element.padding 10
-            , Element.Background.color <| rgb 35 34 49
-            , Element.Font.size 8
-            , Element.Font.family [ Element.Font.monospace ]
-            ]
-
-
-printSeating : Seating -> String
-printSeating seating =
+printSeating : (Seating.Tile -> String) -> Seating -> String
+printSeating printer seating =
     List.range 0 (Matrix.height seating - 1)
-        |> List.filterMap (flip Matrix.getRow seating >> Result.toMaybe >> Maybe.map printRow)
+        |> List.filterMap (flip Matrix.getRow seating >> Result.toMaybe >> Maybe.map (printRow printer))
         |> String.join "\n"
 
 
-printRow : Array Seating.Tile -> String
-printRow =
-    Array.foldl (printTile >> (++)) ""
+printRow : (Seating.Tile -> String) -> Array Seating.Tile -> String
+printRow printer =
+    Array.foldl (printer >> (++)) ""
 
 
-printTile : Seating.Tile -> String
-printTile tile =
+uiTile : Seating.Tile -> String
+uiTile tile =
     case tile of
         Floor ->
             "▪️"
@@ -295,6 +320,19 @@ printTile tile =
 
         Person ->
             "\u{200D}🙎"
+
+
+editTile : Seating.Tile -> String
+editTile tile =
+    case tile of
+        Floor ->
+            "."
+
+        Seat ->
+            "L"
+
+        Person ->
+            "#"
 
 
 
