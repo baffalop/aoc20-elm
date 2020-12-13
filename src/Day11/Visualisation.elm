@@ -31,6 +31,7 @@ type alias Model =
     { seating : Seating
     , mode : Mode
     , state : State
+    , initialSeating : Seating
     }
 
 
@@ -48,16 +49,16 @@ type State
 
 
 init =
-    { seating = initialSeating
+    let
+        seating =
+            Seating.puzzleInput |> Seating.parse
+    in
+    { seating = seating
     , mode = Neighbours
     , state = NotStarted
+    , initialSeating = seating
     }
         |> withNoCmd
-
-
-initialSeating : Seating
-initialSeating =
-    Seating.puzzleInput |> Seating.parse
 
 
 type Msg
@@ -100,7 +101,11 @@ update msg model =
                 |> withNoCmd
 
         Reset ->
-            init
+            { model
+                | state = NotStarted
+                , seating = model.initialSeating
+            }
+                |> withNoCmd
 
         Tick ->
             if model.state /= Playing then
@@ -141,9 +146,14 @@ update msg model =
         Submit ->
             case model.state of
                 Editing value ->
+                    let
+                        newSeating =
+                            Seating.parse value
+                    in
                     { model
                         | state = NotStarted
-                        , seating = Seating.parse value
+                        , seating = newSeating
+                        , initialSeating = newSeating
                     }
                         |> withNoCmd
 
@@ -252,7 +262,9 @@ viewButtons state =
                 [ button "Reset" Reset ]
 
             Editing _ ->
-                [ button "Submit" Submit ]
+                [ button "Submit" Submit
+                , button "Cancel" Reset
+                ]
 
 
 button : String -> msg -> Element msg
