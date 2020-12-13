@@ -102,21 +102,21 @@ update msg model =
 
         StartWith mode ->
             { model | mode = mode, state = Playing }
-                |> withNoCmd
+                |> withCmd (focus ids.pause)
 
         Pause ->
             { model | state = Paused }
-                |> withNoCmd
+                |> withCmd (focus ids.play)
 
         Play ->
             { model | state = Playing }
-                |> withNoCmd
+                |> withCmd (focus ids.pause)
 
         Reset ->
             case model.state of
                 Editing Tweak _ ->
                     { model | state = Paused }
-                        |> withNoCmd
+                        |> withCmd (focus ids.play)
 
                 _ ->
                     { model
@@ -155,8 +155,7 @@ update msg model =
 
         Edit mode ->
             { model | state = Editing mode <| printSeating editTile model.seating }
-                |> withCmd
-                    (Browser.Dom.focus "input" |> Task.attempt (always NoOp))
+                |> withCmd (focus ids.input)
 
         Input value ->
             case model.state of
@@ -173,25 +172,27 @@ update msg model =
                     let
                         newSeating =
                             Seating.parse value
+
+                        { newState, initialSeating, focusId } =
+                            case mode of
+                                New ->
+                                    { newState = NotStarted
+                                    , initialSeating = newSeating
+                                    , focusId = ids.part1
+                                    }
+
+                                Tweak ->
+                                    { newState = Paused
+                                    , initialSeating = model.initialSeating
+                                    , focusId = ids.play
+                                    }
                     in
                     { model
                         | seating = newSeating
-                        , state =
-                            case mode of
-                                New ->
-                                    NotStarted
-
-                                Tweak ->
-                                    Paused
-                        , initialSeating =
-                            case mode of
-                                New ->
-                                    newSeating
-
-                                Tweak ->
-                                    model.initialSeating
+                        , state = newState
+                        , initialSeating = initialSeating
                     }
-                        |> withNoCmd
+                        |> withCmd (focus focusId)
 
                 _ ->
                     noOp
@@ -258,7 +259,7 @@ viewInput : String -> Element Msg
 viewInput value =
     Element.Input.multiline
         [ Element.Background.color <| rgb 35 34 49
-        , Element.htmlAttribute <| Html.Attributes.id "input"
+        , Element.htmlAttribute <| Html.Attributes.id ids.input
         , Element.width <| Element.px 980
         , Element.height <| Element.px 720
         , Element.Font.color <| rgb 188 192 78
@@ -284,28 +285,28 @@ viewButtons state =
     <|
         case state of
             NotStarted ->
-                [ button Primary "Start Part 1" <| StartWith Neighbours
-                , button Primary "Start Part 2" <| StartWith Sightlines
-                , button Secondary "Edit" <| Edit New
+                [ button Primary "Start Part 1" ids.part1 <| StartWith Neighbours
+                , button Primary "Start Part 2" ids.part2 <| StartWith Sightlines
+                , button Secondary "Edit" ids.edit <| Edit New
                 ]
 
             Playing ->
-                [ button Primary "Pause" Pause
-                , button Secondary "Reset" Reset
+                [ button Primary "Pause" ids.pause Pause
+                , button Secondary "Reset" ids.play Reset
                 ]
 
             Paused ->
-                [ button Secondary "Reset" Reset
-                , button Primary "Play" Play
-                , button Secondary "Edit" <| Edit Tweak
+                [ button Secondary "Reset" ids.reset Reset
+                , button Primary "Play" ids.play Play
+                , button Secondary "Edit" ids.edit <| Edit Tweak
                 ]
 
             Done ->
-                [ button Primary "Reset" Reset ]
+                [ button Primary "Reset" ids.reset Reset ]
 
             Editing _ _ ->
-                [ button Primary "Submit" Submit
-                , button Secondary "Cancel" Reset
+                [ button Primary "Submit" ids.submit Submit
+                , button Secondary "Cancel" ids.cancel Reset
                 ]
 
 
@@ -314,10 +315,11 @@ type ButtonStyle
     | Secondary
 
 
-button : ButtonStyle -> String -> msg -> Element msg
-button style label onPress =
+button : ButtonStyle -> String -> String -> msg -> Element msg
+button style label id onPress =
     Element.Input.button
-        [ Element.width <| Element.px 110
+        [ Element.htmlAttribute <| Html.Attributes.id id
+        , Element.width <| Element.px 110
         , Element.Background.color <|
             case style of
                 Primary ->
@@ -397,6 +399,19 @@ editTile tile =
             "#"
 
 
+ids =
+    { input = "input"
+    , play = "play"
+    , pause = "pause"
+    , reset = "reset"
+    , part1 = "part1"
+    , part2 = "part2"
+    , edit = "edit"
+    , submit = "submit"
+    , cancel = "cancel"
+    }
+
+
 
 -- HELPERS
 
@@ -419,6 +434,11 @@ rgb r g b =
         , blue = b
         , alpha = 1
         }
+
+
+focus : String -> Cmd Msg
+focus id =
+    Browser.Dom.focus id |> Task.attempt (always NoOp)
 
 
 withCmd : Cmd msg -> Model -> ( Model, Cmd msg )
