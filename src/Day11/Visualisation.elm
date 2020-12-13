@@ -316,15 +316,6 @@ button label onPress =
         }
 
 
-linkButton : List (Element.Attribute msg) -> String -> msg -> Element msg
-linkButton attr text onPress =
-    Element.Input.button
-        (linkStyles ++ attr)
-        { onPress = Just onPress
-        , label = Element.text text
-        }
-
-
 linkStyles =
     [ Element.Font.size 15
     , Element.Font.color <| rgb 168 193 218
