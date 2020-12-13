@@ -3,6 +3,7 @@ module Day11.Visualisation exposing (main)
 import Array exposing (Array)
 import Basics.Extra exposing (flip)
 import Browser
+import Browser.Dom
 import Day11.Seating as Seating exposing (Seating, Tile(..))
 import Element exposing (Element)
 import Element.Background
@@ -10,7 +11,9 @@ import Element.Border
 import Element.Font
 import Element.Input
 import Html exposing (Html)
+import Html.Attributes
 import Matrix
+import Task
 import Time
 
 
@@ -62,7 +65,8 @@ init =
 
 
 type Msg
-    = StartWith Mode
+    = NoOp
+    | StartWith Mode
     | Pause
     | Play
     | Reset
@@ -93,6 +97,9 @@ update msg model =
             model |> withNoCmd
     in
     case msg of
+        NoOp ->
+            noOp
+
         StartWith mode ->
             { model | mode = mode, state = Playing }
                 |> withNoCmd
@@ -148,7 +155,8 @@ update msg model =
 
         Edit mode ->
             { model | state = Editing mode <| printSeating editTile model.seating }
-                |> withNoCmd
+                |> withCmd
+                    (Browser.Dom.focus "input" |> Task.attempt (always NoOp))
 
         Input value ->
             case model.state of
@@ -246,6 +254,7 @@ viewInput : String -> Element Msg
 viewInput value =
     Element.Input.multiline
         [ Element.Background.color <| rgb 35 34 49
+        , Element.htmlAttribute <| Html.Attributes.id "input"
         , Element.width <| Element.px 980
         , Element.height <| Element.px 720
         , Element.Font.color <| rgb 188 192 78
