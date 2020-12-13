@@ -338,7 +338,7 @@ printSeating printer seating =
 
 printRow : (Seating.Tile -> String) -> Array Seating.Tile -> String
 printRow printer =
-    Array.foldl (printer >> (++)) ""
+    Array.foldl (printer >> flip (++)) ""
 
 
 uiTile : Seating.Tile -> String

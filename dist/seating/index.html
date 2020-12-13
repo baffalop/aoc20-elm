@@ -6758,7 +6758,10 @@ var $elm$core$Array$foldl = F3(
 var $author$project$Day11$Visualisation$printRow = function (printer) {
 	return A2(
 		$elm$core$Array$foldl,
-		A2($elm$core$Basics$composeR, printer, $elm$core$Basics$append),
+		A2(
+			$elm$core$Basics$composeR,
+			printer,
+			$elm_community$basics_extra$Basics$Extra$flip($elm$core$Basics$append)),
 		'');
 };
 var $elm$core$Result$toMaybe = function (result) {
