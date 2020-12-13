@@ -44,6 +44,7 @@ type State
     | Playing
     | Paused
     | Done
+    | Editing String
 
 
 init =
@@ -65,6 +66,7 @@ type Msg
     | Play
     | Reset
     | Tick
+    | LaunchForm
 
 
 subscriptions : Model -> Sub Msg
@@ -126,6 +128,13 @@ update msg model =
                 }
                     |> withNoCmd
 
+        LaunchForm ->
+            Debug.todo "form"
+
+
+
+-- VIEW
+
 
 view : Model -> Html Msg
 view { seating, mode, state } =
@@ -143,8 +152,32 @@ view { seating, mode, state } =
             , Element.spacing 23
             ]
             [ viewButtons state
-            , viewSeating seating
+            , case state of
+                Editing value ->
+                    viewInput value
+
+                _ ->
+                    Element.column
+                        [ Element.width Element.shrink
+                        , Element.height Element.shrink
+                        , Element.spacing 12
+                        ]
+                        [ viewSeating seating
+                        , Element.row
+                            [ Element.spacing 30
+                            ]
+                            [ linkButton [] "Enter your own data" LaunchForm
+                            , link [ Element.alignRight ]
+                                "Source"
+                                "https://github.com/baffalop/aoc20-elm/tree/master/src/Day11"
+                            ]
+                        ]
             ]
+
+
+viewInput : String -> Element msg
+viewInput value =
+    Debug.todo "input"
 
 
 viewButtons : State -> Element Msg
@@ -173,6 +206,9 @@ viewButtons state =
             Done ->
                 [ button "Reset" Reset ]
 
+            Editing _ ->
+                [ button "Submit" Reset ]
+
 
 button : String -> msg -> Element msg
 button label onPress =
@@ -182,8 +218,8 @@ button label onPress =
         , Element.Border.rounded 4
         , Element.padding 10
         , Element.Font.size 18
-        , Element.Font.color <| rgb 225 240 255
-        , Element.Font.family [ Element.Font.typeface "Helvetica", Element.Font.sansSerif ]
+        , fontColor
+        , helvetica
         , Element.Font.center
         , Element.mouseOver
             [ Element.Background.color <| rgb 45 96 138
@@ -192,6 +228,36 @@ button label onPress =
         { onPress = Just onPress
         , label = Element.text label
         }
+
+
+linkButton : List (Element.Attribute msg) -> String -> msg -> Element msg
+linkButton attr text onPress =
+    Element.Input.button
+        (linkStyles ++ attr)
+        { onPress = Just onPress
+        , label = Element.text text
+        }
+
+
+link : List (Element.Attribute msg) -> String -> String -> Element msg
+link attr text url =
+    Element.link (linkStyles ++ attr)
+        { url = url
+        , label = Element.text text
+        }
+
+
+linkStyles =
+    [ Element.Font.size 15
+    , Element.Font.color <| rgb 168 193 218
+    , helvetica
+    , Element.Font.underline
+    , Element.focused []
+    ]
+
+
+
+-- SEATING
 
 
 viewSeating : Seating -> Element msg
@@ -233,6 +299,16 @@ printTile tile =
 
 
 -- HELPERS
+
+
+fontColor : Element.Attribute msg
+fontColor =
+    Element.Font.color <| rgb 225 240 255
+
+
+helvetica : Element.Attribute msg
+helvetica =
+    Element.Font.family [ Element.Font.typeface "Helvetica", Element.Font.sansSerif ]
 
 
 rgb : Int -> Int -> Int -> Element.Color
