@@ -154,18 +154,18 @@ parse =
 toMatrix : a -> Array (Array a) -> Matrix a
 toMatrix defaultElement grid =
     let
-        width =
+        height =
             Array.length grid
 
-        height =
+        width =
             Array.get 0 grid
                 |> Maybe.map Array.length
                 |> Maybe.withDefault 0
     in
     Matrix.generate width height <|
         \x y ->
-            Array.get x grid
-                |> Maybe.andThen (Array.get y)
+            Array.get y grid
+                |> Maybe.andThen (Array.get x)
                 |> Maybe.withDefault defaultElement
 
 
