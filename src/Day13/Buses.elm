@@ -1,4 +1,4 @@
-module Day13.Shuttle exposing (..)
+module Day13.Buses exposing (..)
 
 import List.Extra
 
@@ -7,8 +7,8 @@ solve1 : String -> Maybe Int
 solve1 =
     parse
         >> Maybe.andThen
-            (\{ start, shuttles } ->
-                shuttles
+            (\{ start, buses } ->
+                buses
                     |> List.map
                         (\x ->
                             { id = x
@@ -22,7 +22,7 @@ solve1 =
 
 type alias Constraints =
     { start : Int
-    , shuttles : List Int
+    , buses : List Int
     }
 
 
@@ -34,7 +34,7 @@ parse input =
                 |> Maybe.map
                     (\start ->
                         { start = start
-                        , shuttles =
+                        , buses =
                             line2
                                 |> String.split ","
                                 |> List.filterMap String.toInt
