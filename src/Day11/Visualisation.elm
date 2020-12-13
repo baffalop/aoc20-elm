@@ -284,36 +284,47 @@ viewButtons state =
     <|
         case state of
             NotStarted ->
-                [ button "Start Part 1" <| StartWith Neighbours
-                , button "Start Part 2" <| StartWith Sightlines
-                , button "Edit" <| Edit New
+                [ button Primary "Start Part 1" <| StartWith Neighbours
+                , button Primary "Start Part 2" <| StartWith Sightlines
+                , button Secondary "Edit" <| Edit New
                 ]
 
             Playing ->
-                [ button "Pause" Pause
-                , button "Reset" Reset
+                [ button Primary "Pause" Pause
+                , button Secondary "Reset" Reset
                 ]
 
             Paused ->
-                [ button "Reset" Reset
-                , button "Play" Play
-                , button "Edit" <| Edit Tweak
+                [ button Secondary "Reset" Reset
+                , button Primary "Play" Play
+                , button Secondary "Edit" <| Edit Tweak
                 ]
 
             Done ->
-                [ button "Reset" Reset ]
+                [ button Primary "Reset" Reset ]
 
             Editing _ _ ->
-                [ button "Submit" Submit
-                , button "Cancel" Reset
+                [ button Primary "Submit" Submit
+                , button Secondary "Cancel" Reset
                 ]
 
 
-button : String -> msg -> Element msg
-button label onPress =
+type ButtonStyle
+    = Primary
+    | Secondary
+
+
+button : ButtonStyle -> String -> msg -> Element msg
+button style label onPress =
     Element.Input.button
         [ Element.width <| Element.px 110
-        , Element.Background.color <| rgb 33 75 109
+        , Element.Background.color <|
+            case style of
+                Primary ->
+                    rgb 181 93 60
+
+                Secondary ->
+                    rgb 33 75 109
         , Element.Border.rounded 4
         , Element.padding 10
         , Element.Font.size 18
@@ -321,7 +332,13 @@ button label onPress =
         , helvetica
         , Element.Font.center
         , Element.mouseOver
-            [ Element.Background.color <| rgb 45 96 138
+            [ Element.Background.color <|
+                case style of
+                    Primary ->
+                        rgb 201 110 76
+
+                    Secondary ->
+                        rgb 45 96 138
             ]
         ]
         { onPress = Just onPress
