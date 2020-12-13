@@ -45,7 +45,7 @@ type State
     | Playing
     | Paused
     | Done
-    | Editing String
+    | Editing EditMode String
 
 
 init =
@@ -67,9 +67,14 @@ type Msg
     | Play
     | Reset
     | Tick
-    | Edit
+    | Edit EditMode
     | Input String
     | Submit
+
+
+type EditMode
+    = New
+    | Tweak
 
 
 subscriptions : Model -> Sub Msg
@@ -101,11 +106,17 @@ update msg model =
                 |> withNoCmd
 
         Reset ->
-            { model
-                | state = NotStarted
-                , seating = model.initialSeating
-            }
-                |> withNoCmd
+            case model.state of
+                Editing Tweak _ ->
+                    { model | state = Paused }
+                        |> withNoCmd
+
+                _ ->
+                    { model
+                        | state = NotStarted
+                        , seating = model.initialSeating
+                    }
+                        |> withNoCmd
 
         Tick ->
             if model.state /= Playing then
@@ -135,25 +146,42 @@ update msg model =
                 }
                     |> withNoCmd
 
-        Edit ->
-            { model | state = Editing <| printSeating editTile model.seating }
+        Edit mode ->
+            { model | state = Editing mode <| printSeating editTile model.seating }
                 |> withNoCmd
 
         Input value ->
-            { model | state = Editing value }
-                |> withNoCmd
+            case model.state of
+                Editing mode _ ->
+                    { model | state = Editing mode value }
+                        |> withNoCmd
+
+                _ ->
+                    noOp
 
         Submit ->
             case model.state of
-                Editing value ->
+                Editing mode value ->
                     let
                         newSeating =
                             Seating.parse value
                     in
                     { model
-                        | state = NotStarted
-                        , seating = newSeating
-                        , initialSeating = newSeating
+                        | seating = newSeating
+                        , state =
+                            case mode of
+                                New ->
+                                    NotStarted
+
+                                Tweak ->
+                                    Paused
+                        , initialSeating =
+                            case mode of
+                                New ->
+                                    newSeating
+
+                                Tweak ->
+                                    model.initialSeating
                     }
                         |> withNoCmd
 
@@ -200,7 +228,7 @@ viewMain state seating =
             ]
           <|
             case state of
-                Editing value ->
+                Editing _ value ->
                     viewInput value
 
                 _ ->
@@ -245,7 +273,7 @@ viewButtons state =
             NotStarted ->
                 [ button "Start Part 1" <| StartWith Neighbours
                 , button "Start Part 2" <| StartWith Sightlines
-                , button "Edit" Edit
+                , button "Edit" <| Edit New
                 ]
 
             Playing ->
@@ -254,14 +282,15 @@ viewButtons state =
                 ]
 
             Paused ->
-                [ button "Play" Play
-                , button "Reset" Reset
+                [ button "Reset" Reset
+                , button "Play" Play
+                , button "Edit" <| Edit Tweak
                 ]
 
             Done ->
                 [ button "Reset" Reset ]
 
-            Editing _ ->
+            Editing _ _ ->
                 [ button "Submit" Submit
                 , button "Cancel" Reset
                 ]

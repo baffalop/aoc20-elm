@@ -178,6 +178,9 @@ readTile c =
         'L' ->
             Just Seat
 
+        '#' ->
+            Just Person
+
         _ ->
             Nothing
 

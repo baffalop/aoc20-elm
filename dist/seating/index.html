@@ -5323,6 +5323,7 @@ var $author$project$Day11$Seating$read2d = function (tagger) {
 						$elm$core$Array$fromList))),
 			$elm$core$Array$fromList));
 };
+var $author$project$Day11$Seating$Person = {$: 'Person'};
 var $author$project$Day11$Seating$Seat = {$: 'Seat'};
 var $author$project$Day11$Seating$readTile = function (c) {
 	switch (c.valueOf()) {
@@ -5330,6 +5331,8 @@ var $author$project$Day11$Seating$readTile = function (c) {
 			return $elm$core$Maybe$Just($author$project$Day11$Seating$Floor);
 		case 'L':
 			return $elm$core$Maybe$Just($author$project$Day11$Seating$Seat);
+		case '#':
+			return $elm$core$Maybe$Just($author$project$Day11$Seating$Person);
 		default:
 			return $elm$core$Maybe$Nothing;
 	}
@@ -5906,11 +5909,11 @@ var $author$project$Day11$Visualisation$subscriptions = function (_v0) {
 		$elm$core$Basics$always($author$project$Day11$Visualisation$Tick)) : $elm$core$Platform$Sub$none;
 };
 var $author$project$Day11$Visualisation$Done = {$: 'Done'};
-var $author$project$Day11$Visualisation$Editing = function (a) {
-	return {$: 'Editing', a: a};
-};
+var $author$project$Day11$Visualisation$Editing = F2(
+	function (a, b) {
+		return {$: 'Editing', a: a, b: b};
+	});
 var $author$project$Day11$Visualisation$Paused = {$: 'Paused'};
-var $author$project$Day11$Seating$Person = {$: 'Person'};
 var $elm_community$basics_extra$Basics$Extra$flip = F3(
 	function (f, b, a) {
 		return A2(f, a, b);
@@ -6807,17 +6810,26 @@ var $author$project$Day11$Visualisation$update = F2(
 						model,
 						{state: $author$project$Day11$Visualisation$Playing}));
 			case 'Reset':
-				return $author$project$Day11$Visualisation$withNoCmd(
-					_Utils_update(
-						model,
-						{seating: model.initialSeating, state: $author$project$Day11$Visualisation$NotStarted}));
+				var _v1 = model.state;
+				if ((_v1.$ === 'Editing') && (_v1.a.$ === 'Tweak')) {
+					var _v2 = _v1.a;
+					return $author$project$Day11$Visualisation$withNoCmd(
+						_Utils_update(
+							model,
+							{state: $author$project$Day11$Visualisation$Paused}));
+				} else {
+					return $author$project$Day11$Visualisation$withNoCmd(
+						_Utils_update(
+							model,
+							{seating: model.initialSeating, state: $author$project$Day11$Visualisation$NotStarted}));
+				}
 			case 'Tick':
 				if (!_Utils_eq(model.state, $author$project$Day11$Visualisation$Playing)) {
 					return noOp;
 				} else {
 					var advance = function () {
-						var _v1 = model.mode;
-						if (_v1.$ === 'Neighbours') {
+						var _v3 = model.mode;
+						if (_v3.$ === 'Neighbours') {
 							return $author$project$Day11$Seating$advanceByNeighbours;
 						} else {
 							return $author$project$Day11$Seating$advanceBySightlines;
@@ -6833,30 +6845,56 @@ var $author$project$Day11$Visualisation$update = F2(
 							}));
 				}
 			case 'Edit':
+				var mode = msg.a;
 				return $author$project$Day11$Visualisation$withNoCmd(
 					_Utils_update(
 						model,
 						{
-							state: $author$project$Day11$Visualisation$Editing(
+							state: A2(
+								$author$project$Day11$Visualisation$Editing,
+								mode,
 								A2($author$project$Day11$Visualisation$printSeating, $author$project$Day11$Visualisation$editTile, model.seating))
 						}));
 			case 'Input':
 				var value = msg.a;
-				return $author$project$Day11$Visualisation$withNoCmd(
-					_Utils_update(
-						model,
-						{
-							state: $author$project$Day11$Visualisation$Editing(value)
-						}));
+				var _v4 = model.state;
+				if (_v4.$ === 'Editing') {
+					var mode = _v4.a;
+					return $author$project$Day11$Visualisation$withNoCmd(
+						_Utils_update(
+							model,
+							{
+								state: A2($author$project$Day11$Visualisation$Editing, mode, value)
+							}));
+				} else {
+					return noOp;
+				}
 			default:
-				var _v2 = model.state;
-				if (_v2.$ === 'Editing') {
-					var value = _v2.a;
+				var _v5 = model.state;
+				if (_v5.$ === 'Editing') {
+					var mode = _v5.a;
+					var value = _v5.b;
 					var newSeating = $author$project$Day11$Seating$parse(value);
 					return $author$project$Day11$Visualisation$withNoCmd(
 						_Utils_update(
 							model,
-							{initialSeating: newSeating, seating: newSeating, state: $author$project$Day11$Visualisation$NotStarted}));
+							{
+								initialSeating: function () {
+									if (mode.$ === 'New') {
+										return newSeating;
+									} else {
+										return model.initialSeating;
+									}
+								}(),
+								seating: newSeating,
+								state: function () {
+									if (mode.$ === 'New') {
+										return $author$project$Day11$Visualisation$NotStarted;
+									} else {
+										return $author$project$Day11$Visualisation$Paused;
+									}
+								}()
+							}));
 				} else {
 					return noOp;
 				}
@@ -12636,7 +12674,10 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 			x,
 			x));
 };
-var $author$project$Day11$Visualisation$Edit = {$: 'Edit'};
+var $author$project$Day11$Visualisation$Edit = function (a) {
+	return {$: 'Edit', a: a};
+};
+var $author$project$Day11$Visualisation$New = {$: 'New'};
 var $author$project$Day11$Visualisation$Pause = {$: 'Pause'};
 var $author$project$Day11$Visualisation$Play = {$: 'Play'};
 var $author$project$Day11$Visualisation$Reset = {$: 'Reset'};
@@ -12645,6 +12686,7 @@ var $author$project$Day11$Visualisation$StartWith = function (a) {
 	return {$: 'StartWith', a: a};
 };
 var $author$project$Day11$Visualisation$Submit = {$: 'Submit'};
+var $author$project$Day11$Visualisation$Tweak = {$: 'Tweak'};
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
 var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
 	return {$: 'Describe', a: a};
@@ -13080,7 +13122,10 @@ var $author$project$Day11$Visualisation$viewButtons = function (state) {
 							$author$project$Day11$Visualisation$button,
 							'Start Part 2',
 							$author$project$Day11$Visualisation$StartWith($author$project$Day11$Visualisation$Sightlines)),
-							A2($author$project$Day11$Visualisation$button, 'Edit', $author$project$Day11$Visualisation$Edit)
+							A2(
+							$author$project$Day11$Visualisation$button,
+							'Edit',
+							$author$project$Day11$Visualisation$Edit($author$project$Day11$Visualisation$New))
 						]);
 				case 'Playing':
 					return _List_fromArray(
@@ -13091,8 +13136,12 @@ var $author$project$Day11$Visualisation$viewButtons = function (state) {
 				case 'Paused':
 					return _List_fromArray(
 						[
+							A2($author$project$Day11$Visualisation$button, 'Reset', $author$project$Day11$Visualisation$Reset),
 							A2($author$project$Day11$Visualisation$button, 'Play', $author$project$Day11$Visualisation$Play),
-							A2($author$project$Day11$Visualisation$button, 'Reset', $author$project$Day11$Visualisation$Reset)
+							A2(
+							$author$project$Day11$Visualisation$button,
+							'Edit',
+							$author$project$Day11$Visualisation$Edit($author$project$Day11$Visualisation$Tweak))
 						]);
 				case 'Done':
 					return _List_fromArray(
@@ -14193,7 +14242,7 @@ var $author$project$Day11$Visualisation$viewMain = F2(
 						]),
 					function () {
 						if (state.$ === 'Editing') {
-							var value = state.a;
+							var value = state.b;
 							return $author$project$Day11$Visualisation$viewInput(value);
 						} else {
 							return $mdgriffith$elm_ui$Element$text(
