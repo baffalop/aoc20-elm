@@ -13188,6 +13188,8 @@ var $author$project$Day11$Visualisation$viewButtons = function (state) {
 			}
 		}());
 };
+var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
+var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
 var $mdgriffith$elm_ui$Element$el = F2(
 	function (attrs, child) {
 		return A4(
@@ -13258,13 +13260,36 @@ var $author$project$Day11$Visualisation$linkStyles = _List_fromArray(
 	[
 		$mdgriffith$elm_ui$Element$Font$size(15),
 		$mdgriffith$elm_ui$Element$Font$color(
-		A3($author$project$Day11$Visualisation$rgb, 168, 193, 218)),
+		A3($author$project$Day11$Visualisation$rgb, 126, 147, 169)),
 		$author$project$Day11$Visualisation$helvetica,
 		$mdgriffith$elm_ui$Element$Font$underline,
 		$mdgriffith$elm_ui$Element$focused(_List_Nil)
 	]);
 var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
 var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
+var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
+var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
+	return {$: 'Fill', a: a};
+};
+var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
+var $mdgriffith$elm_ui$Element$paragraph = F2(
+	function (attrs, children) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asParagraph,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Paragraph),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$spacing(5),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
 var $author$project$Day11$Visualisation$uiTile = function (tile) {
 	switch (tile.$) {
 		case 'Floor':
@@ -13463,10 +13488,6 @@ var $mdgriffith$elm_ui$Element$paddingXY = F2(
 		}
 	});
 var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
-var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
-	return {$: 'Fill', a: a};
-};
-var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
 var $mdgriffith$elm_ui$Element$Input$white = A3($mdgriffith$elm_ui$Element$rgb, 1, 1, 1);
 var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
 	function (a, b, c, d, e) {
@@ -14284,18 +14305,22 @@ var $author$project$Day11$Visualisation$viewMain = F2(
 						}
 					}()),
 					A2(
-					$mdgriffith$elm_ui$Element$row,
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$spacing(40)
-						]),
+					$mdgriffith$elm_ui$Element$paragraph,
+					$author$project$Day11$Visualisation$linkStyles,
 					_List_fromArray(
 						[
 							A2(
 							$mdgriffith$elm_ui$Element$link,
-							$author$project$Day11$Visualisation$linkStyles,
+							_List_Nil,
 							{
-								label: $mdgriffith$elm_ui$Element$text('Source'),
+								label: $mdgriffith$elm_ui$Element$text('based on an Advent of Code challenge'),
+								url: 'https://adventofcode.com/2020/day/11'
+							}),
+							A2(
+							$mdgriffith$elm_ui$Element$link,
+							A2($elm$core$List$cons, $mdgriffith$elm_ui$Element$alignRight, $author$project$Day11$Visualisation$linkStyles),
+							{
+								label: $mdgriffith$elm_ui$Element$text('source'),
 								url: 'https://github.com/baffalop/aoc20-elm/tree/master/src/Day11'
 							})
 						]))

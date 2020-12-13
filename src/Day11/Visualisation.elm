@@ -241,10 +241,14 @@ viewMain state seating =
 
                 _ ->
                     printSeating uiTile seating |> Element.text
-        , Element.row [ Element.spacing 40 ]
-            [ Element.link linkStyles
+        , Element.paragraph linkStyles
+            [ Element.link []
+                { url = "https://adventofcode.com/2020/day/11"
+                , label = Element.text "based on an Advent of Code challenge"
+                }
+            , Element.link (Element.alignRight :: linkStyles)
                 { url = "https://github.com/baffalop/aoc20-elm/tree/master/src/Day11"
-                , label = Element.text "Source"
+                , label = Element.text "source"
                 }
             ]
         ]
@@ -327,7 +331,7 @@ button label onPress =
 
 linkStyles =
     [ Element.Font.size 15
-    , Element.Font.color <| rgb 168 193 218
+    , Element.Font.color <| rgb 126 147 169
     , helvetica
     , Element.Font.underline
     , Element.focused []
