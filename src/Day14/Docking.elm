@@ -111,14 +111,14 @@ bitMaskParser =
         \( place, mask ) ->
             let
                 loop =
-                    Tuple.pair (place - 1) >> P.Loop
+                    P.Loop << Tuple.pair (place - 1)
             in
             P.oneOf
                 [ P.succeed (loop mask)
                     |. P.token "X"
-                , P.succeed (loop (mask |> withOneAt place))
+                , P.succeed (loop <| withOneAt place mask)
                     |. P.token "1"
-                , P.succeed (loop (mask |> withZeroAt place))
+                , P.succeed (loop <| withZeroAt place mask)
                     |. P.token "0"
                 , P.succeed (P.Done mask)
                     |. P.end
@@ -131,14 +131,14 @@ floatingMaskParser =
         \( place, mask ) ->
             let
                 loop =
-                    Tuple.pair (place - 1) >> P.Loop
+                    P.Loop << Tuple.pair (place - 1)
             in
             P.oneOf
                 [ P.succeed (loop mask)
                     |. P.token "0"
                 , P.succeed (loop <| List.map (withOneAt place) mask)
                     |. P.token "1"
-                , P.succeed (loop (mask |> branchAt place))
+                , P.succeed (loop <| branchAt place mask)
                     |. P.token "X"
                 , P.succeed (P.Done mask)
                     |. P.end
