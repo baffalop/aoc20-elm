@@ -8,12 +8,12 @@ import Parser as P exposing ((|.), (|=), Parser)
 
 solve1 : String -> Int
 solve1 =
-    parseWith bitMaskParser >> runV1 >> .mem >> Dict.values >> List.sum
+    parseWith bitMaskParser >> runV1 >> .memory >> Dict.values >> List.sum
 
 
 solve2 : String -> Int
 solve2 =
-    parseWith floatingMaskParser >> runV2 >> .mem >> Dict.values >> List.sum
+    parseWith floatingMaskParser >> runV2 >> .memory >> Dict.values >> List.sum
 
 
 type alias BitMask =
@@ -33,43 +33,43 @@ type Instruction mask
 
 type alias Program mask =
     { mask : mask
-    , mem : Dict Int Int
+    , memory : Dict Int Int
     }
 
 
 runV2 : List (Instruction FloatingMask) -> Program FloatingMask
 runV2 =
     List.foldl
-        (\instruction ({ mem, mask } as program) ->
+        (\instruction ({ memory, mask } as program) ->
             case instruction of
                 SetMask newMask ->
                     { program | mask = newMask }
 
                 Write loc value ->
                     { program
-                        | mem =
+                        | memory =
                             List.map (flip applyMask loc) mask
-                                |> List.foldl (flip Dict.insert value) mem
+                                |> List.foldl (flip Dict.insert value) memory
                     }
         )
         { mask = []
-        , mem = Dict.empty
+        , memory = Dict.empty
         }
 
 
 runV1 : List (Instruction BitMask) -> Program BitMask
 runV1 =
     List.foldl
-        (\instruction ({ mem, mask } as program) ->
+        (\instruction ({ memory, mask } as program) ->
             case instruction of
                 SetMask newMask ->
                     { program | mask = newMask }
 
                 Write loc value ->
-                    { program | mem = Dict.insert loc (applyMask mask value) mem }
+                    { program | memory = Dict.insert loc (applyMask mask value) memory }
         )
         { mask = initMask
-        , mem = Dict.empty
+        , memory = Dict.empty
         }
 
 
