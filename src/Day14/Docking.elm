@@ -1,4 +1,4 @@
-module Day14.Docking exposing (puzzleInput, solve1, solve2)
+module Day14.Docking exposing (..)
 
 import Basics.Extra exposing (flip)
 import Binary exposing (Bits)
@@ -107,7 +107,7 @@ instructionParser mask =
 
 bitMaskParser : Parser BitMask
 bitMaskParser =
-    P.loop ( binaryWidth, initMask ) <|
+    P.loop ( wordSize - 1, initMask ) <|
         \( place, mask ) ->
             let
                 loop =
@@ -127,7 +127,7 @@ bitMaskParser =
 
 floatingMaskParser : Parser FloatingMask
 floatingMaskParser =
-    P.loop ( binaryWidth, [ initMask ] ) <|
+    P.loop ( wordSize - 1, [ initMask ] ) <|
         \( place, mask ) ->
             let
                 loop =
@@ -162,16 +162,14 @@ branchAt place mask =
 
 oneAt : Int -> Bits
 oneAt place =
-    True
-        :: List.repeat place False
+    (True :: List.repeat place False)
         |> Binary.fromBooleans
+        |> Binary.ensureSize wordSize
 
 
 onesWithZeroAt : Int -> Bits
-onesWithZeroAt place =
-    List.repeat (binaryWidth - place) True
-        ++ (False :: List.repeat place True)
-        |> Binary.fromBooleans
+onesWithZeroAt =
+    oneAt >> Binary.not
 
 
 initMask : BitMask
@@ -181,9 +179,9 @@ initMask =
     }
 
 
-binaryWidth : Int
-binaryWidth =
-    35
+wordSize : Int
+wordSize =
+    36
 
 
 puzzleInput =
