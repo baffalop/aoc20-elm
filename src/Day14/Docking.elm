@@ -1,5 +1,6 @@
-module Day14.Docking exposing (puzzleInput, solve1)
+module Day14.Docking exposing (puzzleInput, solve1, solve2)
 
+import Basics.Extra exposing (flip)
 import Binary exposing (Bits)
 import Dict exposing (Dict)
 import Parser as P exposing ((|.), (|=), Parser)
@@ -7,36 +8,53 @@ import Parser as P exposing ((|.), (|=), Parser)
 
 solve1 : String -> Int
 solve1 =
-    parse >> run >> .mem >> Dict.values >> List.sum
+    parseWith bitMaskParser >> runV1 >> .mem >> Dict.values >> List.sum
 
 
-type alias Mask =
+solve2 : String -> Int
+solve2 =
+    parseWith floatingMaskParser >> runV2 >> .mem >> Dict.values >> List.sum
+
+
+type alias BitMask =
     { ones : Bits
     , zeroes : Bits
     }
 
 
-type Instruction
-    = SetMask Mask
+type alias FloatingMask =
+    List BitMask
+
+
+type Instruction mask
+    = SetMask mask
     | Write Int Int
 
 
-type alias Program =
-    { mask : Mask
+type alias Program mask =
+    { mask : mask
     , mem : Dict Int Int
     }
 
 
-run : List Instruction -> Program
-run =
-    List.foldl do
+runV2 : List (Instruction FloatingMask) -> Program FloatingMask
+runV2 =
+    List.foldl doV2
+        { mask = []
+        , mem = Dict.empty
+        }
+
+
+runV1 : List (Instruction BitMask) -> Program BitMask
+runV1 =
+    List.foldl doV1
         { mask = initMask
         , mem = Dict.empty
         }
 
 
-do : Instruction -> Program -> Program
-do instruction ({ mem, mask } as program) =
+doV1 : Instruction BitMask -> Program BitMask -> Program BitMask
+doV1 instruction ({ mem, mask } as program) =
     case instruction of
         SetMask newMask ->
             { program | mask = newMask }
@@ -45,25 +63,39 @@ do instruction ({ mem, mask } as program) =
             { program | mem = Dict.insert loc (applyMask mask value) mem }
 
 
-applyMask : Mask -> Int -> Int
+doV2 : Instruction FloatingMask -> Program FloatingMask -> Program FloatingMask
+doV2 instruction ({ mem, mask } as program) =
+    case instruction of
+        SetMask newMask ->
+            { program | mask = newMask }
+
+        Write loc value ->
+            { program
+                | mem =
+                    List.map (flip applyMask loc) mask
+                        |> List.foldl (flip Dict.insert value) mem
+            }
+
+
+applyMask : BitMask -> Int -> Int
 applyMask { ones, zeroes } =
     Binary.fromDecimal >> Binary.or ones >> Binary.and zeroes >> Binary.toDecimal
 
 
-parse : String -> List Instruction
-parse =
-    String.lines >> List.filterMap (P.run instructionParser >> Result.toMaybe)
+parseWith : Parser mask -> String -> List (Instruction mask)
+parseWith maskParser =
+    String.lines >> List.filterMap (P.run (instructionParser maskParser) >> Result.toMaybe)
 
 
-instructionParser : Parser Instruction
-instructionParser =
+instructionParser : Parser mask -> Parser (Instruction mask)
+instructionParser mask =
     P.oneOf
         [ P.succeed SetMask
             |. P.keyword "mask"
             |. P.spaces
             |. P.symbol "="
             |. P.spaces
-            |= maskParser
+            |= mask
         , P.succeed Write
             |. P.keyword "mem"
             |. P.symbol "["
@@ -77,10 +109,10 @@ instructionParser =
         ]
 
 
-maskParser : Parser Mask
-maskParser =
+bitMaskParser : Parser BitMask
+bitMaskParser =
     P.loop ( binaryWidth, initMask ) <|
-        \( place, { ones, zeroes } as mask ) ->
+        \( place, mask ) ->
             let
                 loop =
                     Tuple.pair (place - 1) >> P.Loop
@@ -88,13 +120,48 @@ maskParser =
             P.oneOf
                 [ P.succeed (loop mask)
                     |. P.token "X"
-                , P.succeed (loop { mask | ones = Binary.or ones <| oneAt place })
+                , P.succeed (loop (mask |> withOneAt place))
                     |. P.token "1"
-                , P.succeed (loop { mask | zeroes = Binary.and zeroes <| onesWithZeroAt place })
+                , P.succeed (loop (mask |> withZeroAt place))
                     |. P.token "0"
                 , P.succeed (P.Done mask)
                     |. P.end
                 ]
+
+
+floatingMaskParser : Parser FloatingMask
+floatingMaskParser =
+    P.loop ( binaryWidth, [ initMask ] ) <|
+        \( place, mask ) ->
+            let
+                loop =
+                    Tuple.pair (place - 1) >> P.Loop
+            in
+            P.oneOf
+                [ P.succeed (loop mask)
+                    |. P.token "0"
+                , P.succeed (loop <| List.map (withOneAt place) mask)
+                    |. P.token "1"
+                , P.succeed (loop (mask |> branchAt place))
+                    |. P.token "X"
+                , P.succeed (P.Done mask)
+                    |. P.end
+                ]
+
+
+withOneAt : Int -> BitMask -> BitMask
+withOneAt place mask =
+    { mask | ones = Binary.or mask.ones <| oneAt place }
+
+
+withZeroAt : Int -> BitMask -> BitMask
+withZeroAt place mask =
+    { mask | zeroes = Binary.and mask.zeroes <| onesWithZeroAt place }
+
+
+branchAt : Int -> FloatingMask -> FloatingMask
+branchAt place mask =
+    List.map (withOneAt place) mask ++ List.map (withZeroAt place) mask
 
 
 oneAt : Int -> Bits
@@ -111,7 +178,7 @@ onesWithZeroAt place =
         |> Binary.fromBooleans
 
 
-initMask : Mask
+initMask : BitMask
 initMask =
     { ones = Binary.empty
     , zeroes = Binary.fromIntegers <| List.repeat 36 1
