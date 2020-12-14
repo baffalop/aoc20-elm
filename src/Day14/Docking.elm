@@ -39,7 +39,19 @@ type alias Program mask =
 
 runV2 : List (Instruction FloatingMask) -> Program FloatingMask
 runV2 =
-    List.foldl doV2
+    List.foldl
+        (\instruction ({ mem, mask } as program) ->
+            case instruction of
+                SetMask newMask ->
+                    { program | mask = newMask }
+
+                Write loc value ->
+                    { program
+                        | mem =
+                            List.map (flip applyMask loc) mask
+                                |> List.foldl (flip Dict.insert value) mem
+                    }
+        )
         { mask = []
         , mem = Dict.empty
         }
@@ -47,34 +59,18 @@ runV2 =
 
 runV1 : List (Instruction BitMask) -> Program BitMask
 runV1 =
-    List.foldl doV1
+    List.foldl
+        (\instruction ({ mem, mask } as program) ->
+            case instruction of
+                SetMask newMask ->
+                    { program | mask = newMask }
+
+                Write loc value ->
+                    { program | mem = Dict.insert loc (applyMask mask value) mem }
+        )
         { mask = initMask
         , mem = Dict.empty
         }
-
-
-doV1 : Instruction BitMask -> Program BitMask -> Program BitMask
-doV1 instruction ({ mem, mask } as program) =
-    case instruction of
-        SetMask newMask ->
-            { program | mask = newMask }
-
-        Write loc value ->
-            { program | mem = Dict.insert loc (applyMask mask value) mem }
-
-
-doV2 : Instruction FloatingMask -> Program FloatingMask -> Program FloatingMask
-doV2 instruction ({ mem, mask } as program) =
-    case instruction of
-        SetMask newMask ->
-            { program | mask = newMask }
-
-        Write loc value ->
-            { program
-                | mem =
-                    List.map (flip applyMask loc) mask
-                        |> List.foldl (flip Dict.insert value) mem
-            }
 
 
 applyMask : BitMask -> Int -> Int
