@@ -1,4 +1,4 @@
-module Day15.Recitation exposing (..)
+module Day15.Recitation exposing (puzzleInput, solve1, solve2)
 
 import Basics.Extra exposing (flip, uncurry)
 import Dict exposing (Dict)
@@ -8,6 +8,10 @@ import List.Extra
 solve1 : String -> Maybe Int
 solve1 =
     parse >> playUntil 2020
+
+
+solve2 =
+    parse >> playUntil 30000000
 
 
 playUntil : Int -> List Int -> Maybe Int
@@ -25,7 +29,7 @@ playUntil limit input =
                 thisTurn
 
             else
-                play (index + 1) thisTurn <| Dict.insert lastTurn (index - 1) memory
+                play (index + 1) thisTurn (Dict.insert lastTurn (index - 1) memory)
     in
     List.Extra.unconsLast input
         |> Maybe.map
