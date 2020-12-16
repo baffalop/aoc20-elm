@@ -25,21 +25,27 @@ playUntil limit input =
                     Dict.get lastTurn memory
                         |> Maybe.map ((-) (index - 1))
                         |> Maybe.withDefault 0
+
+                newMemory =
+                    Dict.insert lastTurn (index - 1) memory
             in
             if index > limit then
                 []
 
             else
-                thisTurn :: play (index + 1) thisTurn (Dict.insert lastTurn (index - 1) memory)
+                thisTurn :: play (index + 1) thisTurn newMemory
     in
     List.Extra.unconsLast input
         |> Maybe.map
             (\( lastInput, rest ) ->
-                List.indexedMap ((+) 1 >> flip Tuple.pair) rest
-                    |> List.foldl (uncurry Dict.insert) Dict.empty
-                    |> play (List.length input + 1) lastInput
-                    |> (++) input
+                input ++ play (List.length input + 1) lastInput (memorise rest)
             )
+
+
+memorise : List Int -> Dict Int Int
+memorise =
+    List.indexedMap ((+) 1 >> flip Tuple.pair)
+        >> List.foldl (uncurry Dict.insert) Dict.empty
 
 
 parse =
