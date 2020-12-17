@@ -7,15 +7,20 @@ solve1 =
     parse
         >> Maybe.map
             (\{ fields, nearby } ->
+                let
+                    ranges =
+                        List.concatMap .ranges fields
+                            |> List.sortBy Tuple.first
+                in
                 List.concat nearby
                     |> List.sort
-                    |> rejects (List.sortBy Tuple.first fields)
+                    |> rejects ranges
                     |> List.sum
             )
 
 
 type alias Notes =
-    { fields : List Range
+    { fields : List Field
     , yours : Ticket
     , nearby : List Ticket
     }
@@ -27,8 +32,7 @@ type alias Ticket =
 
 type alias Field =
     { label : String
-    , range1 : Range
-    , range2 : Range
+    , ranges : List Range
     }
 
 
@@ -80,17 +84,21 @@ parseTickets =
         >> List.map (String.split "," >> List.filterMap String.toInt)
 
 
-parseFields : String -> List Range
+parseFields : String -> List Field
 parseFields =
     String.lines
         >> List.filterMap (P.run fieldParser >> Result.toMaybe)
-        >> List.concat
 
 
-fieldParser : Parser (List Range)
+fieldParser : Parser Field
 fieldParser =
-    P.succeed (\range1 range2 -> [ range1, range2 ])
-        |. P.chompUntil ":"
+    P.succeed
+        (\label range1 range2 ->
+            { label = label
+            , ranges = [ range1, range2 ]
+            }
+        )
+        |= (P.chompUntil ":" |> P.getChompedString)
         |. P.symbol ":"
         |. P.spaces
         |= rangeParser
