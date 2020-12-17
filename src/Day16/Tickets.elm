@@ -69,16 +69,16 @@ resolveConstraints =
                 [] ->
                     Just []
 
-                ( index, current ) :: rest ->
+                ( index, candidates ) :: rest ->
                     let
-                        choose field () =
+                        branch field () =
                             List.map (Tuple.mapSecond <| Set.remove field) rest
                                 |> resolve
                                 |> Maybe.map ((::) ( index, field ))
                     in
-                    current
+                    candidates
                         |> Set.toList
-                        |> List.map choose
+                        |> List.map branch
                         |> Maybe.Extra.orListLazy
     in
     List.indexedMap Tuple.pair
