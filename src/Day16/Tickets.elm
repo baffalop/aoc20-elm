@@ -1,7 +1,8 @@
 module Day16.Tickets exposing (..)
 
+import Array
 import Basics.Extra exposing (flip)
-import Dict exposing (Dict)
+import Maybe.Extra
 import Parser as P exposing ((|.), (|=), Parser)
 import Set exposing (Set)
 
@@ -12,19 +13,26 @@ solve1 =
             (\{ fields, nearby } ->
                 List.concat nearby
                     |> List.sort
-                    |> rejectsFrom (getRanges fields)
+                    |> rejectsFrom (flattenRanges fields |> List.sort)
                     |> List.sum
             )
 
 
 solve2 =
     parse
-        >> Maybe.map
+        >> Maybe.andThen
             (\{ fields, mine, nearby } ->
-                removeInvalid fields nearby
+                nearby
+                    |> removeInvalid fields
                     |> columns
                     |> matchingSets fields
-                    |> resolve
+                    |> resolveConstraints
+                    |> Maybe.andThen
+                        (List.filter (Tuple.second >> String.startsWith "departure")
+                            >> List.map (Tuple.first >> flip Array.get (Array.fromList mine))
+                            >> Maybe.Extra.combine
+                            >> Maybe.map List.product
+                        )
             )
 
 
@@ -50,59 +58,30 @@ type alias Range =
     ( Int, Int )
 
 
-resolve : List (Set comparable) -> Dict comparable Int
-resolve input =
+resolveConstraints : List (Set comparable) -> Maybe (List ( Int, comparable ))
+resolveConstraints =
     let
-        indexedInput =
-            List.indexedMap Tuple.pair input
-
-        inputLength =
-            List.length input
-
-        resolve_ : Dict comparable Int -> List ( Int, Set comparable ) -> Dict comparable Int
-        resolve_ result next =
-            case next of
+        resolve : List ( Int, Set comparable ) -> Maybe (List ( Int, comparable ))
+        resolve input =
+            case input of
                 [] ->
-                    if Dict.size result == inputLength then
-                        result
+                    Just []
 
-                    else
-                        let
-                            found =
-                                Dict.values result |> Set.fromList
-
-                            remaining =
-                                indexedInput
-                                    |> List.filter (Tuple.first >> flip Set.member found >> not)
-                        in
-                        resolve_ result remaining
-
-                ( index, candidates ) :: rest ->
+                ( index, current ) :: rest ->
                     let
-                        diffed =
-                            indexedInput
-                                |> without index
-                                |> unionAll
-                                |> Set.diff candidates
+                        choose field () =
+                            List.map (Tuple.mapSecond <| Set.remove field) rest
+                                |> resolve
+                                |> Maybe.map ((::) ( index, field ))
                     in
-                    case Set.toList diffed of
-                        [ x ] ->
-                            resolve_ (Dict.insert x index result) rest
-
-                        _ ->
-                            resolve_ result rest
+                    current
+                        |> Set.toList
+                        |> List.map choose
+                        |> Maybe.Extra.orListLazy
     in
-    resolve_ Dict.empty indexedInput
-
-
-unionAll : List ( Int, Set comparable ) -> Set comparable
-unionAll =
-    List.foldl (Tuple.second >> Set.union) Set.empty
-
-
-without : Int -> List ( Int, a ) -> List ( Int, a )
-without index =
-    List.filterMap (\( i, s ) -> maybeFromBool ( i, s ) <| i /= index)
+    List.indexedMap Tuple.pair
+        >> List.sortBy (Tuple.second >> Set.size)
+        >> resolve
 
 
 matchingSets : List Field -> List (List Int) -> List (Set String)
@@ -154,19 +133,9 @@ columns lists =
                 rest
 
 
-getRanges : List Field -> List Range
-getRanges =
+flattenRanges : List Field -> List Range
+flattenRanges =
     List.concatMap (\{ range1, range2 } -> [ range1, range2 ])
-        >> List.sort
-
-
-maybeFromBool : a -> Bool -> Maybe a
-maybeFromBool happy condition =
-    if condition then
-        Just happy
-
-    else
-        Nothing
 
 
 removeInvalid : List Field -> List (List Int) -> List (List Int)
@@ -175,7 +144,7 @@ removeInvalid fields tickets =
         invalid =
             List.concat tickets
                 |> List.sort
-                |> rejectsFrom (getRanges fields)
+                |> rejectsFrom (flattenRanges fields |> List.sort)
                 |> Set.fromList
     in
     List.filter (Set.fromList >> Set.intersect invalid >> Set.size >> (==) 0) tickets
