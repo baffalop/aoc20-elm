@@ -1,4 +1,4 @@
-module Day16.Tickets exposing (..)
+module Day16.Tickets exposing (puzzleInput, solve1, solve2)
 
 import Array
 import Basics.Extra exposing (flip)
@@ -7,6 +7,7 @@ import Parser as P exposing ((|.), (|=), Parser)
 import Set exposing (Set)
 
 
+solve1 : String -> Maybe Int
 solve1 =
     parse
         >> Maybe.map
@@ -18,6 +19,7 @@ solve1 =
             )
 
 
+solve2 : String -> Maybe Int
 solve2 =
     parse
         >> Maybe.andThen
@@ -150,6 +152,10 @@ removeInvalid fields tickets =
     List.filter (Set.fromList >> Set.intersect invalid >> Set.size >> (==) 0) tickets
 
 
+{-| Assumes ranges and input are sorted.
+Walk along input and ranges simultaneously, accumulating/discarding each input item according to current range,
+moving onto next range when current input element is beyond it.
+-}
 rejectsFrom : List Range -> List Int -> List Int
 rejectsFrom ranges input =
     case ( ranges, input ) of
