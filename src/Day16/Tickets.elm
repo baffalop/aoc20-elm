@@ -1,27 +1,36 @@
 module Day16.Tickets exposing (..)
 
+import Basics.Extra exposing (flip)
+import Dict exposing (Dict)
 import Parser as P exposing ((|.), (|=), Parser)
+import Set exposing (Set)
 
 
 solve1 =
     parse
         >> Maybe.map
             (\{ fields, nearby } ->
-                let
-                    ranges =
-                        List.concatMap .ranges fields
-                            |> List.sortBy Tuple.first
-                in
                 List.concat nearby
                     |> List.sort
-                    |> rejects ranges
+                    |> rejectsFrom (getRanges fields)
                     |> List.sum
+            )
+
+
+solve2 =
+    parse
+        >> Maybe.map
+            (\{ fields, mine, nearby } ->
+                removeInvalid fields nearby
+                    |> columns
+                    |> matchingSets fields
+                    |> resolve
             )
 
 
 type alias Notes =
     { fields : List Field
-    , yours : Ticket
+    , mine : Ticket
     , nearby : List Ticket
     }
 
@@ -32,7 +41,8 @@ type alias Ticket =
 
 type alias Field =
     { label : String
-    , ranges : List Range
+    , range1 : Range
+    , range2 : Range
     }
 
 
@@ -40,8 +50,139 @@ type alias Range =
     ( Int, Int )
 
 
-rejects : List Range -> List Int -> List Int
-rejects ranges input =
+resolve : List (Set comparable) -> Dict comparable Int
+resolve input =
+    let
+        indexedInput =
+            List.indexedMap Tuple.pair input
+
+        inputLength =
+            List.length input
+
+        resolve_ : Dict comparable Int -> List ( Int, Set comparable ) -> Dict comparable Int
+        resolve_ result next =
+            case next of
+                [] ->
+                    if Dict.size result == inputLength then
+                        result
+
+                    else
+                        let
+                            found =
+                                Dict.values result |> Set.fromList
+
+                            remaining =
+                                indexedInput
+                                    |> List.filter (Tuple.first >> flip Set.member found >> not)
+                        in
+                        resolve_ result remaining
+
+                ( index, candidates ) :: rest ->
+                    let
+                        diffed =
+                            indexedInput
+                                |> without index
+                                |> unionAll
+                                |> Set.diff candidates
+                    in
+                    case Set.toList diffed of
+                        [ x ] ->
+                            resolve_ (Dict.insert x index result) rest
+
+                        _ ->
+                            resolve_ result rest
+    in
+    resolve_ Dict.empty indexedInput
+
+
+unionAll : List ( Int, Set comparable ) -> Set comparable
+unionAll =
+    List.foldl (Tuple.second >> Set.union) Set.empty
+
+
+without : Int -> List ( Int, a ) -> List ( Int, a )
+without index =
+    List.filterMap (\( i, s ) -> maybeFromBool ( i, s ) <| i /= index)
+
+
+matchingSets : List Field -> List (List Int) -> List (Set String)
+matchingSets fields =
+    List.map
+        ((\values -> List.filter (match values) fields)
+            >> List.map .label
+            >> Set.fromList
+        )
+
+
+match : List Int -> Field -> Bool
+match values field =
+    let
+        ( low1, high1 ) =
+            field.range1
+
+        ( low2, high2 ) =
+            field.range2
+    in
+    case values of
+        [] ->
+            True
+
+        x :: xs ->
+            if x < low1 then
+                False
+
+            else if x <= high1 then
+                match xs field
+
+            else if x < low2 || x > high2 then
+                False
+
+            else
+                match xs field
+
+
+columns : List (List a) -> List (List a)
+columns lists =
+    case lists of
+        [] ->
+            []
+
+        first :: rest ->
+            List.foldl
+                (List.map2 (::))
+                (List.map List.singleton first)
+                rest
+
+
+getRanges : List Field -> List Range
+getRanges =
+    List.concatMap (\{ range1, range2 } -> [ range1, range2 ])
+        >> List.sort
+
+
+maybeFromBool : a -> Bool -> Maybe a
+maybeFromBool happy condition =
+    if condition then
+        Just happy
+
+    else
+        Nothing
+
+
+removeInvalid : List Field -> List (List Int) -> List (List Int)
+removeInvalid fields tickets =
+    let
+        invalid =
+            List.concat tickets
+                |> List.sort
+                |> rejectsFrom (getRanges fields)
+                |> Set.fromList
+    in
+    List.filter (Set.fromList >> Set.intersect invalid >> Set.size >> (==) 0) tickets
+
+
+rejectsFrom : List Range -> List Int -> List Int
+rejectsFrom ranges input =
     case ( ranges, input ) of
         ( [], _ ) ->
             input
@@ -51,13 +192,13 @@ rejects ranges input =
 
         ( ( low, high ) :: restRanges, x :: xs ) ->
             if x < low then
-                x :: rejects ranges xs
+                x :: rejectsFrom ranges xs
 
             else if x <= high then
-                rejects ranges xs
+                rejectsFrom ranges xs
 
             else
-                rejects restRanges input
+                rejectsFrom restRanges input
 
 
 parse : String -> Maybe Notes
@@ -67,7 +208,7 @@ parse input =
             Maybe.map
                 (\y ->
                     { fields = parseFields fields
-                    , yours = y
+                    , mine = y
                     , nearby = parseTickets nearby
                     }
                 )
@@ -92,12 +233,7 @@ parseFields =
 
 fieldParser : Parser Field
 fieldParser =
-    P.succeed
-        (\label range1 range2 ->
-            { label = label
-            , ranges = [ range1, range2 ]
-            }
-        )
+    P.succeed Field
         |= (P.chompUntil ":" |> P.getChompedString)
         |. P.symbol ":"
         |. P.spaces
