@@ -29,8 +29,8 @@ type Term
 
 
 evalBasic : Expr -> Int
-evalBasic (Expr el ops) =
-    List.foldl evalOp (evalBasicTerm el) ops
+evalBasic (Expr term ops) =
+    List.foldl evalOp (evalBasicTerm term) ops
 
 
 evalAdvanced : Expr -> Int
