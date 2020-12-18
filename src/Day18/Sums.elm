@@ -35,6 +35,7 @@ evalBasic (Expr el ops) =
 
 evalAdvanced : Expr -> Int
 evalAdvanced (Expr term ops) =
+    -- add up all the Adds first, building up a list of values to multiply
     List.foldl evalAdds ( evalAdvancedTerm term, [] ) ops
         |> uncurry (::)
         |> List.product
