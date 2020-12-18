@@ -1,12 +1,17 @@
-module Day18.Sums exposing (puzzleInput, solve1)
+module Day18.Sums exposing (puzzleInput, solve1, solve2)
 
-import Basics.Extra exposing (flip)
+import Basics.Extra exposing (flip, uncurry)
 import Parser as P exposing ((|.), (|=), Parser)
 
 
 solve1 : String -> Int
 solve1 =
-    parse >> List.map eval >> List.sum
+    parse >> List.map evalBasic >> List.sum
+
+
+solve2 : String -> Int
+solve2 =
+    parse >> List.map evalAdvanced >> List.sum
 
 
 type Expr
@@ -23,29 +28,56 @@ type Element
     | Sub Expr
 
 
-eval : Expr -> Int
-eval (Expr el ops) =
-    List.foldl evalOp (evalEl el) ops
+evalBasic : Expr -> Int
+evalBasic (Expr el ops) =
+    List.foldl evalOp (evalBasicEl el) ops
+
+
+evalAdvanced : Expr -> Int
+evalAdvanced (Expr el ops) =
+    List.foldl evalAdds ( evalAdvancedEl el, [] ) ops
+        |> uncurry (::)
+        |> List.product
+
+
+evalAdds : Op -> ( Int, List Int ) -> ( Int, List Int )
+evalAdds op ( lastTerm, mults ) =
+    case op of
+        Add el ->
+            ( lastTerm + evalAdvancedEl el, mults )
+
+        Mult el ->
+            ( evalAdvancedEl el, lastTerm :: mults )
 
 
 evalOp : Op -> Int -> Int
 evalOp op input =
     case op of
         Add el ->
-            input + evalEl el
+            input + evalBasicEl el
 
         Mult el ->
-            input * evalEl el
+            input * evalBasicEl el
 
 
-evalEl : Element -> Int
-evalEl el =
+evalBasicEl : Element -> Int
+evalBasicEl el =
     case el of
         Lit val ->
             val
 
         Sub expr ->
-            eval expr
+            evalBasic expr
+
+
+evalAdvancedEl : Element -> Int
+evalAdvancedEl el =
+    case el of
+        Lit val ->
+            val
+
+        Sub expr ->
+            evalAdvanced expr
 
 
 parse : String -> List Expr
