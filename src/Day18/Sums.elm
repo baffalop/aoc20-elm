@@ -89,7 +89,7 @@ parse =
 exprParser : Parser Expr
 exprParser =
     P.succeed Expr
-        |= elementParser
+        |= termParser
         |= opsParser
 
 
@@ -103,19 +103,19 @@ opsParser =
                             |. P.symbol "+"
                         )
                     |. P.spaces
-                    |= elementParser
+                    |= termParser
                 , P.succeed (Mult >> flip (::) state >> P.Loop)
                     |. P.backtrackable
                         (P.spaces
                             |. P.symbol "*"
                         )
                     |. P.spaces
-                    |= elementParser
+                    |= termParser
                 , P.succeed (P.Done <| List.reverse state)
                 ]
 
 
-elementParser =
+termParser =
     P.oneOf
         [ P.succeed Lit
             |= P.backtrackable P.int
