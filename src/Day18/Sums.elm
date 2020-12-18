@@ -15,27 +15,27 @@ solve2 =
 
 
 type Expr
-    = Expr Element (List Op)
+    = Expr Term (List Op)
 
 
 type Op
-    = Add Element
-    | Mult Element
+    = Add Term
+    | Mult Term
 
 
-type Element
+type Term
     = Lit Int
     | Sub Expr
 
 
 evalBasic : Expr -> Int
 evalBasic (Expr el ops) =
-    List.foldl evalOp (evalBasicEl el) ops
+    List.foldl evalOp (evalBasicTerm el) ops
 
 
 evalAdvanced : Expr -> Int
-evalAdvanced (Expr el ops) =
-    List.foldl evalAdds ( evalAdvancedEl el, [] ) ops
+evalAdvanced (Expr term ops) =
+    List.foldl evalAdds ( evalAdvancedTerm term, [] ) ops
         |> uncurry (::)
         |> List.product
 
@@ -43,26 +43,26 @@ evalAdvanced (Expr el ops) =
 evalAdds : Op -> ( Int, List Int ) -> ( Int, List Int )
 evalAdds op ( lastTerm, mults ) =
     case op of
-        Add el ->
-            ( lastTerm + evalAdvancedEl el, mults )
+        Add term ->
+            ( lastTerm + evalAdvancedTerm term, mults )
 
-        Mult el ->
-            ( evalAdvancedEl el, lastTerm :: mults )
+        Mult term ->
+            ( evalAdvancedTerm term, lastTerm :: mults )
 
 
 evalOp : Op -> Int -> Int
 evalOp op input =
     case op of
-        Add el ->
-            input + evalBasicEl el
+        Add term ->
+            input + evalBasicTerm term
 
-        Mult el ->
-            input * evalBasicEl el
+        Mult term ->
+            input * evalBasicTerm term
 
 
-evalBasicEl : Element -> Int
-evalBasicEl el =
-    case el of
+evalBasicTerm : Term -> Int
+evalBasicTerm term =
+    case term of
         Lit val ->
             val
 
@@ -70,9 +70,9 @@ evalBasicEl el =
             evalBasic expr
 
 
-evalAdvancedEl : Element -> Int
-evalAdvancedEl el =
-    case el of
+evalAdvancedTerm : Term -> Int
+evalAdvancedTerm term =
+    case term of
         Lit val ->
             val
 
