@@ -93,6 +93,7 @@ exprParser =
         |= opsParser
 
 
+opsParser : Parser (List Op)
 opsParser =
     P.loop [] <|
         \state ->
@@ -115,6 +116,7 @@ opsParser =
                 ]
 
 
+termParser : Parser Term
 termParser =
     P.oneOf
         [ P.succeed Lit
