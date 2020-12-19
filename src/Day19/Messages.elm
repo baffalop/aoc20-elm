@@ -7,12 +7,7 @@ import Result.Extra
 
 
 solve1 =
-    parse
-        >> Result.map
-            (\( parser, messages ) ->
-                List.filterMap (P.run parser >> Result.toMaybe) messages
-                    |> List.length
-            )
+    parse >> resultAndThenFirst compileRuleset >> Result.map (check >> List.length)
 
 
 type Rule
@@ -30,17 +25,31 @@ type Error
     | MyErr String
 
 
-parse : String -> Result Error ( Parser (), List String )
+check : ( Parser (), List String ) -> List ()
+check ( parser, messages ) =
+    List.filterMap (P.run parser >> Result.toMaybe) messages
+
+
+resultAndThenFirst : (a -> Result e b) -> Result e ( a, c ) -> Result e ( b, c )
+resultAndThenFirst f =
+    Result.andThen (Tuple.mapFirst f >> Result.Extra.combineFirst)
+
+
+parse : String -> Result Error ( Ruleset, List String )
 parse input =
     case String.split "\n\n" input of
         [ ruleset, messages ] ->
             P.run rulesetParser ruleset
+                |> Result.map (flip Tuple.pair (String.lines messages))
                 |> Result.mapError ParserErr
-                |> Result.andThen (compileRuleAt 0)
-                |> Result.map (flip (|.) P.end >> flip Tuple.pair (String.lines messages))
 
         _ ->
             Err <| MyErr "Couldn't split puzzleInput"
+
+
+compileRuleset : Dict Int Rule -> Result Error (Parser ())
+compileRuleset =
+    compileRuleAt 0 >> Result.map (flip (|.) P.end)
 
 
 compileRuleAt : Int -> Dict Int Rule -> Result Error (Parser ())
