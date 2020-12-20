@@ -1,4 +1,4 @@
-module Day19.Messages exposing (puzzleInput, solve1)
+module Day19.Messages exposing (example, puzzleInput, solve1, solve2)
 
 import Basics.Extra exposing (flip)
 import Dict exposing (Dict)
@@ -7,13 +7,27 @@ import Result.Extra
 
 
 solve1 =
-    parse >> resultAndThenFirst compileRuleset >> Result.map (check >> List.length)
+    parse
+        >> resultAndThenFirst compileRuleset
+        >> Result.map (check >> List.length)
+
+
+solve2 =
+    parse
+        >> resultAndThenFirst
+            (Dict.insert 8 (RecurseEnd 42)
+                >> Dict.insert 11 (RecurseMiddle 42 31)
+                >> compileRuleset
+            )
+        >> Result.map debugCheck
 
 
 type Rule
-    = Sequence (List Int)
+    = Literal Char
+    | Sequence (List Int)
     | OneOf Rule Rule
-    | Literal Char
+    | RecurseEnd Int
+    | RecurseMiddle Int Int
 
 
 type alias Ruleset =
@@ -28,6 +42,11 @@ type Error
 check : ( Parser (), List String ) -> List ()
 check ( parser, messages ) =
     List.filterMap (P.run parser >> Result.toMaybe) messages
+
+
+debugCheck : ( Parser (), List String ) -> List (Result (List P.DeadEnd) String)
+debugCheck ( parser, messages ) =
+    List.map (P.run (parser |> P.getChompedString)) messages
 
 
 resultAndThenFirst : (a -> Result e b) -> Result e ( a, c ) -> Result e ( b, c )
@@ -80,6 +99,37 @@ compileRule ruleset rule =
                 )
                 (compileRule ruleset rule1)
                 (compileRule ruleset rule2)
+
+        RecurseEnd index ->
+            compileRuleAt index ruleset
+                |> Result.map recursiveEndParser
+
+        RecurseMiddle index1 index2 ->
+            Result.map2
+                recursiveMiddleParser
+                (compileRuleAt index1 ruleset)
+                (compileRuleAt index2 ruleset)
+
+
+recursiveEndParser : Parser () -> Parser ()
+recursiveEndParser baseParser =
+    baseParser
+        |. P.oneOf
+            [ P.backtrackable <|
+                P.lazy (\() -> recursiveEndParser baseParser)
+            , P.succeed ()
+            ]
+
+
+recursiveMiddleParser : Parser () -> Parser () -> Parser ()
+recursiveMiddleParser parser1 parser2 =
+    parser1
+        |. P.oneOf
+            [ P.backtrackable <|
+                P.lazy (\() -> recursiveMiddleParser parser1 parser2)
+                    |. parser2
+            , parser2
+            ]
 
 
 rulesetParser : Parser Ruleset
@@ -146,6 +196,56 @@ charParser =
 space : Parser ()
 space =
     P.chompWhile ((==) ' ')
+
+
+example =
+    """42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: "a"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: "b"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+bbabbbbaabaabba
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+ababaaaaaabaaab
+ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaaaabbaaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+babaaabbbaaabaababbaabababaaab
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"""
 
 
 puzzleInput =
